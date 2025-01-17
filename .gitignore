@@ -1,0 +1,80 @@
+# Ignore build output
+target/
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Ignore IntelliJ IDEA project files
+.idea/
+.idea/modules.xml
+.idea/jarRepositories.xml
+.idea/compiler.xml
+.idea/libraries/
+*.iws
+*.iml
+*.ipr
+
+# Ignore Eclipse project files
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# Ignore NetBeans project files
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# Ignore build directories for all IDEs
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Ignore Visual Studio Code settings
+.vscode/
+
+# Ignore Mac OS system files
+.DS_Store
+
+# Ignore Maven Wrapper files
+!.mvn/wrapper/maven-wrapper.jar
+.mvn/
+
+# Ignore Spring Boot specific files
+spring-boot-devtools.properties
+
+# Ignore compiled files
+*.class
+
+# Ignore log files
+*.log
+
+# Ignore database files (e.g., H2, Derby, SQLite)
+*.db
+*.sqlite
+*.h2.db
+
+# Ignore environment-specific files
+/.env
+*.env
+
+# Ignore user-specific IDE files
+*.swp
+*.swo
+*~
+
+# Ignore JPA/Hibernate configuration files
+*.hbm.xml
+hibernate.cfg.xml
+
+# Ignore generated files from Spring Boot packaging
+*.jar
+*.war
+*.ear
+
+# Ignore temporary files or folders created during development
+/tmp/
