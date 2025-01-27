@@ -1,34 +1,33 @@
 <!DOCTYPE html>
 <html lang="cs-cz" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout.html :: head}">
-    <meta charset="UTF-8">
-    <title>PojištěníApp</title>
-</head>
-<body class="custom-body">
-    <header th:replace="~{fragments/layout.html :: header}"></header>
+    <head th:replace="~{fragments/layout.html :: head}">
+        <title>PojištěníApp</title>
+    </head>
+    <body class="custom-body">
+        <header th:replace="~{fragments/layout.html :: header}"></header>
 
-    <article class="text-center container">
-        <header>
-            <h1 class="display-4 mb-4">PojištěníApp</h1>
-        </header>
-        <section>
-            <h3 class="mb-4">Vítejte v naší pojišťovací aplikaci.</h3>
-            <p class="lead">
-                S námi je pojištění jednodušší než kdy předtím.
-                Naše aplikace vám umožní snadno a rychle vybrat a spravovat vaše pojištění podle vašich potřeb.
-                Ať už hledáte životní, zdravotní, automobilové nebo majetkové pojištění, máme pro vás to pravé řešení.
-            </p>
-            <p>
-                Vyberte si z široké nabídky pojištění online.
-                S námi budete mít vaše pojištění pod kontrolou – jednoduše, rychle a bezpečně.
-            </p>
-            <p class="mt-4">
-                <!-- TODO: add register link to this text -->
-                Zaregistrujte se ještě dnes a začněte využívat výhod naší aplikace pro snadný a efektivní způsob pojištění.
-            </p>
-        </section>
-    </article>
+        <article class="text-center container">
+            <header>
+                <h1 class="display-4 mb-5">PojištěníApp</h1>
+            </header>
+            <section>
+                <h3 class="mb-4">Vítejte v naší pojišťovací aplikaci.</h3>
+                <p class="lead">
+                    S námi je pojištění jednodušší než kdy předtím.
+                    Naše aplikace vám umožní snadno a rychle vybrat a spravovat vaše pojištění podle vašich potřeb.
+                    Ať už hledáte životní, zdravotní, automobilové nebo majetkové pojištění, máme pro vás to pravé řešení.
+                </p>
+                <p>
+                    Vyberte si z široké nabídky pojištění online.
+                    S námi budete mít vaše pojištění pod kontrolou – jednoduše, rychle a bezpečně.
+                </p>
+                <p class="mt-4">
+                    <!-- TODO: add register link to this text -->
+                    Zaregistrujte se ještě dnes a začněte využívat výhod naší aplikace pro snadný a efektivní způsob pojištění.
+                </p>
+            </section>
+        </article>
 
-    <footer th:replace="~{fragments/layout.html :: footer}"></footer>
-</body>
+        <footer th:replace="~{fragments/layout.html :: footer}"></footer>
+    </body>
 </html>

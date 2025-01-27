@@ -23,7 +23,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li>
-                        <a class="nav-link mx-1" th:href="@{#}" aria-label="Policyholders Section">Pojištěnci</a>
+                        <a class="nav-link mx-1" th:href="@{/insured}" aria-label="Insured Section">Pojištěnci</a>
                     </li>
                     <li>
                         <a class="nav-link mx-1" th:href="@{#}" aria-label="Insurance Section">Pojištění</a>
@@ -33,6 +33,21 @@
                     </li>
                     <li>
                         <a class="nav-link mx-1" th:href="@{/about}" aria-label="About the Application">O aplikaci...</a>
+                    </li>
+                </ul>
+
+                <!-- right-aligned links section -->
+                <ul class="navbar-nav ms-auto">
+                    <li sec:authorize="isAnonymous()">
+                        <a class="nav-link mx-1" th:href="@{/account/login}">Přihlásit se</a>
+                    </li>
+                    <li sec:authorize="isAnonymous()">
+                        <a class="nav-link mx-1" th:href="@{/account/register}">Registrovat</a>
+                    </li>
+                    <li>
+                        <form method="post" th:action="@{/account/logout}">
+                            <button class="btn btn-dark" sec:authorize="isAuthenticated()">Odhlásit se</button>
+                        </form>
                     </li>
                 </ul>
             </div>

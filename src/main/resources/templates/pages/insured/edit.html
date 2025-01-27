@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="cs-cz" xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="~{fragments/layout.html :: head}">
+
+  </head>
+  <body class="custom-body">
+    <header th:replace="~{fragments/layout.html :: header}"></header>
+
+    <article class="container">
+      <header>
+        <h1>Upravit</h1>
+      </header>
+
+      <section class="text-center">
+        <form class="d-flex flex-column gap-2"
+              method="post"
+              th:action="@{/insured/edit/{userId}(userId=${userProfileDTO.userId})}"
+              th:object="${userProfileDTO}">
+          <div class="form-group">
+            <label for="first-name" class="control-label">Jméno</label>
+            <input id="first-name" th:field="*{firstName}" class="form-control" th:value="${userProfileDTO.firstName}"/>
+            <small class="text-danger" th:errors="*{firstName}"></small>
+          </div>
+          <div class="form-group">
+            <label for="last-name" class="control-label">Příjmení</label>
+            <input id="last-name" class="form-control" th:field="*{lastName}" th:value="${userProfileDTO.lastName}"/>
+            <small class="text-danger" th:errors="*{lastName}"></small>
+          </div>
+          <div class="form-group">
+            <label for="email" class="control-label">Email</label>
+            <input id="email" class="form-control" th:field="*{email}" th:value="${userProfileDTO.email}"/>
+            <small class="text-danger" th:errors="*{email}"></small>
+          </div>
+          <div class="form-group">
+            <label for="phone" class="control-label">Telefon</label>
+            <input id="phone" class="form-control" th:field="*{phone}" th:value="${userProfileDTO.phone}"/>
+            <small class="text-danger" th:errors="*{phone}"></small>
+          </div>
+          <div class="form-group">
+            <label for="street" class="control-label">Ulice a číslo popisné</label>
+            <input id="street" class="form-control" th:field="*{street}" th:value="${userProfileDTO.street}"/>
+            <small class="text-danger" th:errors="*{street}"></small>
+          </div>
+          <div class="form-group">
+            <label for="city" class="control-label">Město</label>
+            <input id="city" class="form-control" th:field="*{city}" th:value="${userProfileDTO.city}"/>
+            <small class="text-danger" th:errors="*{city}"></small>
+          </div>
+          <div class="form-group">
+            <label for="zipcode" class="control-label">PSČ</label>
+            <input id="zipcode" class="form-control" th:field="*{zipCode}" th:value="${userProfileDTO.zipCode}"/>
+            <small class="text-danger" th:errors="*{zipCode}"></small>
+          </div>
+          <div class="form-group">
+            <label for="role" class="control-label">Role</label>
+            <select id="role" class="form-control" th:field="*{role}">
+              <option value="ROLE_POJISTENEC" th:selected="${userProfileDTO.role == 'ROLE_POJISTENEC'}">Pojištěnec</option>
+              <option value="ROLE_POJISTNIK" th:selected="${userProfileDTO.role == 'ROLE_POJISTNIK'}">Pojistník</option>
+            </select>
+            <small class="text-danger" th:errors="*{role}"></small>
+          </div>
+          <div class="form-group">
+            <button type="submit" class="btn btn-dark">Uložit</button>
+          </div>
+        </form>
+
+        <a class="btn btn-dark mt-4" th:href="@{/insured}">Zpět na seznam</a>
+
+      </section>
+    </article>
+    <footer th:replace="~{fragments/layout.html :: footer}"></footer>
+  </body>
+</html>

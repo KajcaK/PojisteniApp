@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="cs-cz" xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="~{fragments/layout.html :: head}">
+      <title>Pojištěnci</title>
+  </head>
+  <body class="custom-body">
+      <header th:replace="~{fragments/layout.html :: header}"></header>
+
+      <div class="py-2 flash-message message-error" th:text="${error}" th:if="${error}"></div>
+      <div class="py-2 flash-message message-success" th:text="${success}" th:if="${success}"></div>
+
+      <article class="container">
+        <header>
+           <h3 class="display-6 mb-4">Pojištěnci</h3>
+        </header>
+
+        <section class="text-center">
+            <p> <!--TODO: add sec:authorize admin -->
+              <a class="btn btn-dark btn-lg mb-4" th:href="@{/insured/create}">Nový pojištěnec</a>
+            </p>
+
+            <table class="table table-striped table-hover" th:if="${insuredList.size() > 0}">
+              <thead>
+                <tr>
+                  <th>Jméno</th>
+                  <th>Bydliště</th>
+                  <th></th>
+                </tr>
+              </thead>
+                  <tr th:each="insured: ${insuredList}">
+                      <td>
+                          <a th:href="@{'/insured/detail/' + ${insured.userId}}" th:text="${insured.firstName + ' ' + insured.lastName}"></a>
+                          <span class="badge text-bg-dark ms-2" th:text="${insured.role.getFormattedRole()}"></span>
+                      </td>
+                      <td th:text="${insured.street + ', ' + insured.city}"></td>
+                      <td>
+                          <a class="btn btn-warning" th:href="@{'/insured/edit/' + ${insured.userId}}">Editovat</a>
+                          <a class="btn btn-danger" th:href="@{'/insured/delete/' + ${insured.userId}}">Odstranit</a>
+                      </td>
+                  </tr>
+            </table>
+        </section>
+          <!-- Pagination -->
+          <div class="pagination-container text-center">
+              <nav>
+                  <ul class="pagination" th:if="${totalPages > 1}">
+                      <li class="page-item" th:class="${currentPage == 1 ? 'disabled' : ''}">
+                          <a class="page-link" href="#" th:href="@{/insured(page=${currentPage - 1})}">Previous</a>
+                      </li>
+
+                      <!-- Loop through the page numbers -->
+                      <li class="page-item" th:each="pageNum : ${#numbers.sequence(1, totalPages)}" th:class="${pageNum == currentPage ? 'active' : ''}">
+                          <a class="page-link" th:href="@{/insured(page=${pageNum})}" th:text="${pageNum}"></a>
+                      </li>
+
+                      <li class="page-item" th:class="${currentPage == totalPages ? 'disabled' : ''}">
+                          <a class="page-link" href="#" th:href="@{/insured(page=${currentPage + 1})}">Next</a>
+                      </li>
+                  </ul>
+              </nav>
+          </div>
+      </article>
+      <footer th:replace="~{fragments/layout.html :: footer}"></footer>
+  </body>
+</html>

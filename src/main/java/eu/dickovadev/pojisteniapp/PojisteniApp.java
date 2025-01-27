@@ -1,4 +1,4 @@
-package eu.dickovadev;
+package eu.dickovadev.pojisteniapp;
 
 
 import org.springframework.boot.SpringApplication;

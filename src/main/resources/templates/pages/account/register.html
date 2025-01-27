@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="cs-cz" xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="~{fragments/layout.html :: head}">
+    <title>Registrace</title>
+  </head>
+  <body class="custom-body">
+    <header th:replace="~{fragments/layout.html :: header}"></header>
+
+    <div class="py-2 flash-message message-error" th:text="${error}" th:if="${error}"></div>
+
+    <article class="container">
+      <header>
+        <h1 class="display-6 mb-4 text-center">Registrace</h1>
+      </header>
+
+      <section class="d-flex justify-content-center py-5 w-100" style="background-color: #343a40;">
+        <div class="row justify-content-center w-100">
+          <div class="col-md-8 col-lg-6">
+            <form th:action="@{/account/register}" th:object="${accountDTO}" method="post" class="d-flex flex-column gap-3 p-4 bg-dark text-white rounded shadow-lg">
+              <!-- Email Field -->
+              <div class="form-group">
+                <label for="email" class="form-label">Uživatelský email</label>
+                <input id="email" name="email" th:field="*{email}" class="form-control bg-dark text-white border-0 shadow-none" required />
+                <small class="text-danger" th:errors="*{email}"></small>
+              </div>
+
+              <!-- Password Field -->
+              <div class="form-group">
+                <label for="password" class="form-label">Heslo</label>
+                <input id="password" name="password" type="password" th:field="*{password}" class="form-control bg-dark text-white border-0 shadow-none" required />
+                <small class="text-danger" th:errors="*{password}"></small>
+              </div>
+
+              <!-- Confirm Password Field -->
+              <div class="form-group">
+                <label for="confirm-password" class="form-label">Heslo pro zopakování</label>
+                <input id="confirm-password" name="confirmPassword" type="password" th:field="*{confirmPassword}" class="form-control bg-dark text-white border-0 shadow-none" required />
+                <small class="text-danger" th:errors="*{confirmPassword}"></small>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="form-group">
+                <button type="submit" class="btn btn-info w-100">Registrovat</button>
+              </div>
+
+              <!-- Login Link -->
+              <div class="form-group text-center">
+                <p>
+                  <a th:href="@{/account/login}" class="text-decoration-none text-light">Máte již účet? Přihlaste se</a>
+                </p>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </article>
+
+    <footer th:replace="~{fragments/layout.html :: footer}"></footer>
+  </body>
+</html>

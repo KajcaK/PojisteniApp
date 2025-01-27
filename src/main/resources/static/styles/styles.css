@@ -9,12 +9,36 @@ article{
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: space-evenly;
     margin-top: 5rem;
+    flex-grow: 1;
+    margin-top: 2rem;
 }
 
 h2{
     margin-top: 3rem;
 }
 
+section {
+    width: 80%;
+}
 
+
+/*
+Flash messages
+*/
+.flash-message {
+    text-align: center;
+    color: black;
+    width: 90%;
+    margin: 0 auto;
+    margin-top: 10px;
+}
+
+.message-success {
+    background: #549125;
+}
+
+.message-error {
+    background: #ba1e0d;
+}

@@ -1,4 +1,4 @@
-package eu.dickovadev.controllers;
+package eu.dickovadev.pojisteniapp.controllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
