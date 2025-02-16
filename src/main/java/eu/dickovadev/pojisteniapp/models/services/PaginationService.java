@@ -1,7 +1,5 @@
 package eu.dickovadev.pojisteniapp.models.services;
 
-import eu.dickovadev.pojisteniapp.models.dto.UserDTO;
-
 import java.util.List;
 import java.util.Map;
 
