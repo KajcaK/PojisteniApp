@@ -1,4 +1,4 @@
-package eu.dickovadev.pojisteniapp.data.entities;
+package eu.dickovadev.pojisteniapp.entities;
 
 import eu.dickovadev.pojisteniapp.models.enums.Role;
 import jakarta.persistence.*;
@@ -7,7 +7,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 public class UserEntity implements UserDetails {
@@ -21,8 +24,11 @@ public class UserEntity implements UserDetails {
 
     private String password;
 
+    @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
-    private Role role;
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "role")
+    private Set<Role> roles = new HashSet<>();
 
     private String firstName;
 
@@ -35,6 +41,9 @@ public class UserEntity implements UserDetails {
     private String city;
 
     private String zipCode;
+
+    @OneToMany(mappedBy = "policyHolder", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Set<InsurancePolicyEntity> insurancePolicies = new HashSet<>();
 
     // region: Getters and Setters
     public long getUserId() {
@@ -57,12 +66,12 @@ public class UserEntity implements UserDetails {
         this.password = password;
     }
 
-    public Role getRole() {
-        return role;
+    public Set<Role> getRoles() {
+        return roles;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
     public String getFirstName() {
@@ -112,6 +121,15 @@ public class UserEntity implements UserDetails {
     public void setZipCode(String zipCode) {
         this.zipCode = zipCode;
     }
+
+    public Set<InsurancePolicyEntity> getInsurancePolicies() {
+        return insurancePolicies;
+    }
+
+    public void setInsurancePolicies(Set<InsurancePolicyEntity> insurancePolicies) {
+        this.insurancePolicies = insurancePolicies;
+    }
+
     // endregion
 
     // region: UserDetails Methods
@@ -127,8 +145,12 @@ public class UserEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.getAuthority());
-        return List.of(authority);
+        // Create a list of authorities from all the roles
+        List<SimpleGrantedAuthority> authorities = roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.name())) // Convert role to SimpleGrantedAuthority
+                .collect(Collectors.toList()); // Collect the authorities into a list
+
+        return authorities;
     }
 
     @Override
@@ -152,4 +174,12 @@ public class UserEntity implements UserDetails {
     }
 
     // endregion
+
+    public void addRole(Role role) {
+        this.roles.add(role);
+    }
+
+    public void removeRole(Role role) {
+        this.roles.remove(role);
+    }
 }

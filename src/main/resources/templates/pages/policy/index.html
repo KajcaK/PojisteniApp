@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="cs-cz" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout.html :: head}">
+    <title>Pojištěnci</title>
+</head>
+<body class="custom-body">
+<header th:replace="~{fragments/layout.html :: header}"></header>
+
+<div class="py-2 flash-message message-error" th:text="${error}" th:if="${error}"></div>
+<div class="py-2 flash-message message-success" th:text="${success}" th:if="${success}"></div>
+
+<article class="container">
+    <header>
+        <h3 class="display-6 mb-4">Pojištění</h3>
+    </header>
+
+    <section class="text-center">
+        <table class="table table-striped table-hover" th:if="${policyList.size() > 0}">
+            <thead>
+            <tr>
+                <th>Typ</th>
+                <th>Pojištěný</th>
+                <th>Pojistník</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tr th:each="policy: ${policyList}">
+                <td>
+                    <a th:href="@{'/policy/' + ${policy.policyId} + '/detail'}" th:text="${policy.type.getFormattedPolicyType()}"></a>
+                </td>
+                <td th:text="${policy.insuredUser.firstName + ' ' + policy.insuredUser.lastName}"></td>
+                <td th:text="${policy.policyHolder.firstName + ' ' + policy.policyHolder.lastName}"></td>
+                <td>
+                    <a class="btn btn-warning" th:href="@{'/policy/' + ${policy.policyId} + '/edit'}">Editovat</a>
+                    <a class="btn btn-danger" th:href="@{'/policy/' + ${policy.policyId} + '/delete'}">Odstranit</a>
+                </td>
+            </tr>
+        </table>
+    </section>
+    <!-- Pagination -->
+    <div class="pagination-container text-center">
+        <nav>
+            <ul class="pagination" th:if="${totalPages > 1}">
+                <li class="page-item" th:class="${currentPage == 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="#" th:href="@{/policy(page=${currentPage - 1})}">Předchozí</a>
+                </li>
+
+                <!-- Loop through the page numbers -->
+                <li class="page-item" th:each="pageNum : ${#numbers.sequence(1, totalPages)}" th:class="${pageNum == currentPage ? 'active' : ''}">
+                    <a class="page-link" th:href="@{/policy(page=${pageNum})}" th:text="${pageNum}"></a>
+                </li>
+
+                <li class="page-item" th:class="${currentPage == totalPages ? 'disabled' : ''}">
+                    <a class="page-link" href="#" th:href="@{/policy(page=${currentPage + 1})}">Další</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</article>
+</body>
+</html>

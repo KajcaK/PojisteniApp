@@ -6,6 +6,9 @@
   <body class="custom-body">
   <header th:replace="~{fragments/layout.html :: header}"></header>
 
+  <div class="py-2 flash-message message-error" th:text="${error}" th:if="${error}"></div>
+  <div class="py-2 flash-message message-success" th:text="${success}" th:if="${success}"></div>
+
     <article class="container">
       <header class="mb-5 text-center">
         <div class="card mb-5" style="width: 75vh">
@@ -14,7 +17,7 @@
               <span th:text="${user.firstName} + ' ' + ${user.lastName}"></span>
             </h2>
             <p class="card-subtitle mb-2">
-              <span class="badge text-bg-dark ms-2" th:text="${user.role.getFormattedRole()}"></span>
+              <span class="badge text-bg-dark ms-2" th:each="role : ${user.roles}" th:text="${role.getFormattedRole()}"></span>
             </p>
             <p class="card-text text-muted" th:text="${user.street}"></p>
             <p class="card-text text-muted" th:text="${user.city}"></p>
@@ -29,31 +32,53 @@
       </header>
 
       <section class="text-center mb-5">
-        <h2 class="mb-4">Sjednaná pojištění</h2>
+        <h2 class="mb-4" th:text="${policies.size() == 0 ? 'Žádná pojištění' : 'Sjednaná pojištění'}"></h2>
 
-        <table class="table table-striped table-hover">
+        <table class="table table-striped table-hover" th:if="${policies.size() > 0}">
           <thead>
           <tr>
             <th>Pojištění</th>
             <th>Částka</th>
+            <th>Pojištěný</th>
             <th></th>
           </tr>
           </thead>
           <tbody>
-          <tr><!--th:each=""-->
-            <td><a></a></td>
-            <td></td>
+          <tr th:each="policy: ${policies}">
+            <td><a th:href="@{'/policy/' + ${policy.policyId} + '/detail'}"
+                   th:text="${policy.type != null ? policy.type.getFormattedPolicyType() : 'Neznámý typ pojištění'}"></a></td>
+            <td th:text="${policy.coverageAmount}"></td>
+            <td th:text="${policy.insuredUser.firstName} + ' ' + ${policy.insuredUser.lastName}"></td>
             <td>
-              <a class="btn btn-warning btn-sm" th:href="@{#}">Editovat</a>
-              <a class="btn btn-danger btn-sm" th:href="@{#}">Odstranit</a>
+              <a class="btn btn-warning btn-sm" th:href="@{'/policy/' + ${policy.policyId} + '/edit'}">Editovat</a>
+              <a class="btn btn-danger btn-sm" th:href="@{'/policy/' + ${policy.policyId} + '/delete'}">Odstranit</a>
             </td>
           </tr>
           </tbody>
         </table>
+        <!-- Pagination -->
+        <div class="pagination-container text-center">
+          <nav>
+            <ul class="pagination" th:if="${totalPages > 1}">
+              <li class="page-item" th:class="${currentPage == 1 ? 'disabled' : ''}">
+                <a class="page-link" href="#" th:href="@{/policy(page=${currentPage - 1})}">Předchozí</a>
+              </li>
 
-        <a class="btn btn-primary" th:href="@{#}">Přidat pojištění</a>
-        <a class="btn btn-warning" th:href="@{'/insured/edit/' + ${user.userId}}">Editovat pojištěnce</a>
-        <a class="btn btn-danger" th:href="@{'/insured/delete/' + ${user.userId}}">Odstranit pojištěnce</a>
+              <!-- Loop through the page numbers -->
+              <li class="page-item" th:each="pageNum : ${#numbers.sequence(1, totalPages)}" th:class="${pageNum == currentPage ? 'active' : ''}">
+                <a class="page-link" th:href="@{/policy(page=${pageNum})}" th:text="${pageNum}"></a>
+              </li>
+
+              <li class="page-item" th:class="${currentPage == totalPages ? 'disabled' : ''}">
+                <a class="page-link" href="#" th:href="@{/policy(page=${currentPage + 1})}">Další</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+
+        <a class="btn btn-primary" th:href="@{'/policy/' + ${userId} + '/create'}">Přidat pojištění</a>
+        <a class="btn btn-warning" th:href="@{'/insured/' + ${user.userId} + '/edit'}">Editovat pojištěnce</a>
+        <a class="btn btn-danger" th:href="@{'/insured/' + ${user.userId} + '/delete'}">Odstranit pojištěnce</a>
         <a class="btn btn-dark" th:href="@{/insured}">Zpět na seznam</a>
 
       </section>

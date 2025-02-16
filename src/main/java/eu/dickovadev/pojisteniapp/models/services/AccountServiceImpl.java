@@ -1,7 +1,7 @@
 package eu.dickovadev.pojisteniapp.models.services;
 
-import eu.dickovadev.pojisteniapp.data.entities.UserEntity;
-import eu.dickovadev.pojisteniapp.data.repositories.UserRepository;
+import eu.dickovadev.pojisteniapp.entities.UserEntity;
+import eu.dickovadev.pojisteniapp.entities.repositories.UserRepository;
 import eu.dickovadev.pojisteniapp.models.dto.AccountDTO;
 import eu.dickovadev.pojisteniapp.models.enums.Role;
 import eu.dickovadev.pojisteniapp.models.exceptions.DuplicateEmailException;
@@ -31,7 +31,7 @@ public class AccountServiceImpl implements AccountService{
 
         userEntity.setEmail(user.getEmail());
         userEntity.setPassword(passwordEncoder.encode(user.getPassword()));
-        userEntity.setRole(Role.ROLE_USER);
+        userEntity.addRole(Role.ROLE_USER);
 
         try {
             userRepository.save(userEntity);

@@ -1,6 +1,6 @@
-package eu.dickovadev.pojisteniapp.data.repositories;
+package eu.dickovadev.pojisteniapp.entities.repositories;
 
-import eu.dickovadev.pojisteniapp.data.entities.UserEntity;
+import eu.dickovadev.pojisteniapp.entities.UserEntity;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;

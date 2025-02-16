@@ -1,11 +1,14 @@
 package eu.dickovadev.pojisteniapp.controllers;
 
 
-import eu.dickovadev.pojisteniapp.models.dto.UserProfileDTO;
+import eu.dickovadev.pojisteniapp.models.dto.PolicyDTO;
+import eu.dickovadev.pojisteniapp.models.dto.UserDTO;
 import eu.dickovadev.pojisteniapp.models.exceptions.DuplicateEmailException;
 import eu.dickovadev.pojisteniapp.models.exceptions.EmailAlreadyRegisteredException;
+import eu.dickovadev.pojisteniapp.models.exceptions.UserNotFoundException;
 import eu.dickovadev.pojisteniapp.models.mappers.UserMapper;
 import eu.dickovadev.pojisteniapp.models.services.PaginationService;
+import eu.dickovadev.pojisteniapp.models.services.PolicyService;
 import eu.dickovadev.pojisteniapp.models.services.RoleFilterService;
 import eu.dickovadev.pojisteniapp.models.services.UserService;
 import jakarta.validation.Valid;
@@ -16,8 +19,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/insured")
@@ -35,6 +40,9 @@ public class InsuredController {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private PolicyService policyService;
+
     @GetMapping
     public String renderIndex(
             Model model,
@@ -44,13 +52,13 @@ public class InsuredController {
         int pageSize = 8;
 
         // Get all user profiles
-        List<UserProfileDTO> insuredList = userService.getAll();
+        List<UserDTO> insuredList = userService.getAll();
 
         // Filter the list based on roles (admins will not be listed)
-        List<UserProfileDTO> filteredList = roleFilterService.filterUsersExcludingAdmins(insuredList);
+        List<UserDTO> filteredList = roleFilterService.filterUsersExcludingAdmins(insuredList);
 
         // Paginate the filtered list
-        List<UserProfileDTO> paginatedList = paginationService.paginate(filteredList, page, pageSize);
+        List<UserDTO> paginatedList = paginationService.paginate(filteredList, page, pageSize);
 
         // Get calculated metadata
         Map<String, Integer> paginationMetadata = paginationService.getPaginationMetadata(filteredList, page, pageSize);
@@ -65,13 +73,13 @@ public class InsuredController {
     }
 
     @GetMapping("/create")
-    public String renderCreateForm(@ModelAttribute UserProfileDTO user){
+    public String renderCreateForm(@ModelAttribute UserDTO user){
         return "pages/insured/create";
     }
 
     @PostMapping("/create")
     public String createInsured(
-            @Valid @ModelAttribute UserProfileDTO user,
+            @Valid @ModelAttribute UserDTO user,
             BindingResult result,
             RedirectAttributes redirectAttributes
     ){
@@ -81,35 +89,59 @@ public class InsuredController {
         userService.create(user);
         redirectAttributes.addFlashAttribute("success", "Pojištěnec přidán.");
 
-        return "redirect:/insured";
+        redirectAttributes.addAttribute("userId", user.getUserId());
+
+        return "redirect:/insured/{userId}/detail";
     }
 
-    @GetMapping("/detail/{userId}")
+    @GetMapping("/{userId}/detail")
     public String renderDetail(
             @PathVariable long userId,
-            Model model
+            Model model,
+            @RequestParam(defaultValue = "1") int page
     ){
-        UserProfileDTO user = userService.getById(userId);
+        // Define the page size
+        int pageSize = 5;
+
+        UserDTO user = userService.getById(userId);
+
+        Set<PolicyDTO> policies = user.getPolicies();
+
+        // Convert Set to List
+        List<PolicyDTO> policyList = new ArrayList<>(policies);
+
+        // Paginate the filtered list
+        List<PolicyDTO> paginatedList = paginationService.paginate(policyList, page, pageSize);
+
+        // Get calculated metadata
+        Map<String, Integer> paginationMetadata = paginationService.getPaginationMetadata(policyList, page, pageSize);
+
+        // Add attributes to the model
         model.addAttribute("user", user);
+        model.addAttribute("policies", paginatedList);
+        model.addAttribute("currentPage", paginationMetadata.get("currentPage"));
+        model.addAttribute("totalPages", paginationMetadata.get("totalPages"));
+        model.addAttribute("totalItems", paginationMetadata.get("totalItems"));
 
         return "pages/insured/detail";
     }
 
-    @GetMapping("edit/{userId}")
+
+    @GetMapping("/{userId}/edit")
     public String renderEditForm(
             @PathVariable Long userId,
-            UserProfileDTO user
+            UserDTO user
     ){
-        UserProfileDTO fetchedUser = userService.getById(userId);
+        UserDTO fetchedUser = userService.getById(userId);
         userMapper.updateUserProfileDTO(fetchedUser, user);
 
         return "pages/insured/edit";
     }
 
-    @PostMapping("edit/{userId}")
+    @PostMapping("{userId}/edit")
     public String editInsured(
             @PathVariable long userId,
-            @Valid UserProfileDTO user,
+            @Valid UserDTO user,
             BindingResult result,
             RedirectAttributes redirectAttributes
     ){
@@ -123,7 +155,7 @@ public class InsuredController {
         return "redirect:/insured";
     }
 
-    @GetMapping("delete/{userId}")
+    @GetMapping("{userId}/delete")
     public String deleteInsured(
             @PathVariable long userId,
             RedirectAttributes redirectAttributes
@@ -136,17 +168,28 @@ public class InsuredController {
 
     @ExceptionHandler({DuplicateEmailException.class})
     public String handleDuplicateEmailException(
-            RedirectAttributes redirectAttributes
+            RedirectAttributes redirectAttributes,
+            DuplicateEmailException ex
     ){
-        redirectAttributes.addFlashAttribute("error", "Tento email je již registrován. Zkuste jiný.");
+        redirectAttributes.addFlashAttribute("error", ex.getMessage());
         return "redirect:/insured";
     }
 
     @ExceptionHandler({EmailAlreadyRegisteredException.class})
     public String handleEmailAlreadyRegisteredException(
-            RedirectAttributes redirectAttributes
+            RedirectAttributes redirectAttributes,
+            EmailAlreadyRegisteredException ex
     ){
-        redirectAttributes.addFlashAttribute("error", "Tento email již patří jinému uživateli.");
+        redirectAttributes.addFlashAttribute("error", ex.getMessage());
+        return "redirect:/insured";
+    }
+
+    @ExceptionHandler({UserNotFoundException.class})
+    public String handleUserNotFoundException(
+            RedirectAttributes redirectAttributes,
+            UserNotFoundException ex
+    ){
+        redirectAttributes.addFlashAttribute("error", ex.getMessage());
         return "redirect:/insured";
     }
 }

@@ -1,18 +1,21 @@
 package eu.dickovadev.pojisteniapp.models.services;
 
-import eu.dickovadev.pojisteniapp.models.dto.UserProfileDTO;
+import eu.dickovadev.pojisteniapp.entities.UserEntity;
+import eu.dickovadev.pojisteniapp.models.dto.UserDTO;
 
 import java.util.List;
 
 public interface UserService {
 
-    List<UserProfileDTO> getAll();
+    List<UserDTO> getAll();
 
-    UserProfileDTO getById(long userId);
+    UserDTO getById(long userId);
 
-    void edit(UserProfileDTO user);
+    void edit(UserDTO user);
 
     void remove(long userId);
 
-    void create(UserProfileDTO user);
+    void create(UserDTO user);
+
+    UserEntity getEntityById(long userId);
 }

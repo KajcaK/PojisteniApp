@@ -44,11 +44,11 @@ public class AccountController {
         try {
             accountService.create(accountDTO);
         } catch (DuplicateEmailException e) {
-            result.rejectValue("email", "error", "Email je již používán.");
+            result.rejectValue("email", "error", e.getMessage());
             return "/pages/account/register";
         } catch (PasswordsDoNotEqualException e) {
-            result.rejectValue("password", "error", "Hesla se nerovnají.");
-            result.rejectValue("confirmPassword", "error", "Hesla se nerovnají.");
+            result.rejectValue("password", "error", e.getMessage());
+            result.rejectValue("confirmPassword", "error", e.getMessage());
             return "/pages/account/register";
         }
 

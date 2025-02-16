@@ -1,7 +1,7 @@
 package eu.dickovadev.pojisteniapp.models.mappers;
 
-import eu.dickovadev.pojisteniapp.data.entities.UserEntity;
-import eu.dickovadev.pojisteniapp.models.dto.UserProfileDTO;
+import eu.dickovadev.pojisteniapp.entities.UserEntity;
+import eu.dickovadev.pojisteniapp.models.dto.UserDTO;
 import org.mapstruct.Mapper;
 
 import org.mapstruct.MappingTarget;
@@ -9,12 +9,12 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
-    UserEntity toEntity(UserProfileDTO source);
+    UserEntity toEntity(UserDTO source);
 
-    UserProfileDTO toDTO(UserEntity source);
+    UserDTO toDTO(UserEntity source);
 
-    void updateUserProfileDTO(UserProfileDTO source, @MappingTarget UserProfileDTO target);
+    void updateUserProfileDTO(UserDTO source, @MappingTarget UserDTO target);
 
-    void updateUserEntity(UserProfileDTO source, @MappingTarget UserEntity target);
+    void updateUserEntity(UserDTO source, @MappingTarget UserEntity target);
 
 }

@@ -6,7 +6,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-public class UserProfileDTO {
+import java.util.HashSet;
+import java.util.Set;
+
+public class UserDTO {
     private long userId;
 
     @NotBlank(message = "Vyplňte jméno")
@@ -38,7 +41,9 @@ public class UserProfileDTO {
     @Pattern(regexp = "^[0-9]{5}$", message = "PSČ musí mít 5 číslic")
     private String zipCode;
 
-    private Role role;
+    private Set<Role> roles = new HashSet<>();
+
+    private Set<PolicyDTO> policies;
 
     //region: getters and setters
     public String getFirstName() {
@@ -105,12 +110,20 @@ public class UserProfileDTO {
         this.userId = userId;
     }
 
-    public Role getRole() {
-        return role;
+    public Set<Role> getRoles() {
+        return roles;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    public Set<PolicyDTO> getPolicies(){
+        return policies;
+    }
+
+    public void setPolicies(Set<PolicyDTO> policies){
+        this.policies = policies;
     }
     //endregion
 }

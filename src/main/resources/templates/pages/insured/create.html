@@ -16,57 +16,85 @@
         <form class="d-flex flex-column gap-2"
               method="post"
               th:action="@{/insured/create}"
-              th:object="${userProfileDTO}">
-            <div class="form-group">
-                <label for="first-name" class="control-label">Jméno</label>
-                <input id="first-name" th:field="*{firstName}" class="form-control"/>
-                <small class="text-danger" th:errors="*{firstName}"></small>
+              th:object="${userDTO}">
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="first-name" class="control-label">Jméno</label>
+                        <input id="first-name" th:field="*{firstName}" class="form-control"/>
+                        <small class="text-danger" th:errors="*{firstName}"></small>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="last-name" class="control-label">Příjmení</label>
+                        <input id="last-name" class="form-control" th:field="*{lastName}"/>
+                        <small class="text-danger" th:errors="*{lastName}"></small>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="last-name" class="control-label">Příjmení</label>
-                <input id="last-name" class="form-control" th:field="*{lastName}"/>
-                <small class="text-danger" th:errors="*{lastName}"></small>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="email" class="control-label">Email</label>
+                        <input id="email" class="form-control" th:field="*{email}"/>
+                        <small class="text-danger" th:errors="*{email}"></small>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="phone" class="control-label">Telefon</label>
+                        <input id="phone" class="form-control" th:field="*{phone}"/>
+                        <small class="text-danger" th:errors="*{phone}"></small>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="email" class="control-label">Email</label>
-                <input id="email" class="form-control" th:field="*{email}"/>
-                <small class="text-danger" th:errors="*{email}"></small>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="street" class="control-label">Ulice a číslo popisné</label>
+                        <input id="street" class="form-control" th:field="*{street}"/>
+                        <small class="text-danger" th:errors="*{street}"></small>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="city" class="control-label">Město</label>
+                        <input id="city" class="form-control" th:field="*{city}"/>
+                        <small class="text-danger" th:errors="*{city}"></small>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="phone" class="control-label">Telefon</label>
-                <input id="phone" class="form-control" th:field="*{phone}"/>
-                <small class="text-danger" th:errors="*{phone}"></small>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="zipcode" class="control-label">PSČ</label>
+                        <input id="zipcode" class="form-control" th:field="*{zipCode}"/>
+                        <small class="text-danger" th:errors="*{zipCode}"></small>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="roles" class="control-label">Role</label>
+                        <select id="roles" class="form-control" th:field="*{roles}" multiple>
+                            <option value="ROLE_POJISTENEC" th:selected="${userDTO.roles.contains('ROLE_POJISTENEC')}">Pojištěnec</option>
+                            <option value="ROLE_POJISTNIK" th:selected="${userDTO.roles.contains('ROLE_POJISTNIK')}">Pojistník</option>
+                        </select>
+                        <small class="text-danger" th:errors="*{roles}"></small>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="street" class="control-label">Ulice a číslo popisné</label>
-                <input id="street" class="form-control" th:field="*{street}"/>
-                <small class="text-danger" th:errors="*{street}"></small>
-            </div>
-            <div class="form-group">
-                <label for="city" class="control-label">Město</label>
-                <input id="city" class="form-control" th:field="*{city}"/>
-                <small class="text-danger" th:errors="*{city}"></small>
-            </div>
-            <div class="form-group">
-                <label for="zipcode" class="control-label">PSČ</label>
-                <input id="zipcode" class="form-control" th:field="*{zipCode}"/>
-                <small class="text-danger" th:errors="*{zipCode}"></small>
-            </div>
-            <div class="form-group">
-                <label for="role" class="control-label">Role</label>
-                <select id="role" class="form-control" th:field="*{role}">
-                    <option value="ROLE_POJISTENEC" th:selected="${userProfileDTO.role == 'ROLE_POJISTENEC'}">Pojištěnec</option>
-                    <option value="ROLE_POJISTNIK" th:selected="${userProfileDTO.role == 'ROLE_POJISTNIK'}">Pojistník</option>
-                </select>
-                <small class="text-danger" th:errors="*{role}"></small>
-            </div>
+
             <div class="form-group">
                 <button type="submit" class="btn btn-dark">Uložit</button>
             </div>
         </form>
 
         <a class="btn btn-dark mt-4" th:href="@{/insured}">Zpět na seznam</a>
-
     </section>
 </article>
 <footer th:replace="~{fragments/layout.html :: footer}"></footer>

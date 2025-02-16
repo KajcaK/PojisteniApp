@@ -29,13 +29,13 @@
               </thead>
                   <tr th:each="insured: ${insuredList}">
                       <td>
-                          <a th:href="@{'/insured/detail/' + ${insured.userId}}" th:text="${insured.firstName + ' ' + insured.lastName}"></a>
-                          <span class="badge text-bg-dark ms-2" th:text="${insured.role.getFormattedRole()}"></span>
+                          <a th:href="@{'/insured/' + ${insured.userId} + '/detail'}" th:text="${insured.firstName + ' ' + insured.lastName}"></a>
+                          <span class="badge text-bg-dark ms-2" th:each="role : ${insured.roles}" th:text="${role.getFormattedRole()}"></span>
                       </td>
                       <td th:text="${insured.street + ', ' + insured.city}"></td>
                       <td>
-                          <a class="btn btn-warning" th:href="@{'/insured/edit/' + ${insured.userId}}">Editovat</a>
-                          <a class="btn btn-danger" th:href="@{'/insured/delete/' + ${insured.userId}}">Odstranit</a>
+                          <a class="btn btn-warning" th:href="@{'/insured/' + ${insured.userId} + '/edit'}">Editovat</a>
+                          <a class="btn btn-danger" th:href="@{'/insured/' + ${insured.userId} + '/delete'}">Odstranit</a>
                       </td>
                   </tr>
             </table>
@@ -45,7 +45,7 @@
               <nav>
                   <ul class="pagination" th:if="${totalPages > 1}">
                       <li class="page-item" th:class="${currentPage == 1 ? 'disabled' : ''}">
-                          <a class="page-link" href="#" th:href="@{/insured(page=${currentPage - 1})}">Previous</a>
+                          <a class="page-link" href="#" th:href="@{/insured(page=${currentPage - 1})}">Předchozí</a>
                       </li>
 
                       <!-- Loop through the page numbers -->
@@ -54,7 +54,7 @@
                       </li>
 
                       <li class="page-item" th:class="${currentPage == totalPages ? 'disabled' : ''}">
-                          <a class="page-link" href="#" th:href="@{/insured(page=${currentPage + 1})}">Next</a>
+                          <a class="page-link" href="#" th:href="@{/insured(page=${currentPage + 1})}">Další</a>
                       </li>
                   </ul>
               </nav>

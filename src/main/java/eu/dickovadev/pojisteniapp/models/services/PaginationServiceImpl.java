@@ -1,6 +1,5 @@
 package eu.dickovadev.pojisteniapp.models.services;
 
-import eu.dickovadev.pojisteniapp.models.dto.UserProfileDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -9,10 +8,10 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class PaginationServiceImpl implements PaginationService{
+public class PaginationServiceImpl implements PaginationService {
 
     // Method to calculate pagination metadata
-    private Map<String, Integer> calculatePaginationMetadata(List<UserProfileDTO> items, int page, int pageSize) {
+    private <T> Map<String, Integer> calculatePaginationMetadata(List<T> items, int page, int pageSize) {
         // Ensure valid page and pageSize values
         page = Math.max(1, page);  // Ensure page is at least 1
         pageSize = Math.max(1, pageSize);  // Ensure pageSize is at least 1
@@ -30,7 +29,7 @@ public class PaginationServiceImpl implements PaginationService{
     }
 
     @Override
-    public List<UserProfileDTO> paginate(List<UserProfileDTO> items, int page, int pageSize) {
+    public <T> List<T> paginate(List<T> items, int page, int pageSize) {
         Map<String, Integer> metadata = calculatePaginationMetadata(items, page, pageSize);
 
         int startIndex = (metadata.get("currentPage") - 1) * pageSize;
@@ -45,7 +44,7 @@ public class PaginationServiceImpl implements PaginationService{
     }
 
     @Override
-    public Map<String, Integer> getPaginationMetadata(List<UserProfileDTO> items, int page, int pageSize) {
+    public <T> Map<String, Integer> getPaginationMetadata(List<T> items, int page, int pageSize) {
         // Directly return the pagination metadata map
         return calculatePaginationMetadata(items, page, pageSize);
     }

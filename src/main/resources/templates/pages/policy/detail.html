@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="cs-cz" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout.html :: head}">
+    <title>Pojištěnci</title>
+</head>
+<body class="custom-body">
+<header th:replace="~{fragments/layout.html :: header}"></header>
+
+<article class="container">
+    <header>
+        <h3 class="display-6 mb-4" th:text="'Detail pojištění pro ' + ${policy.insuredUser.firstName} + ' ' + ${policy.insuredUser.lastName}"></h3>
+    </header>
+
+    <section class="text-center">
+        <div class="container">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th colspan="2" class="text-center text-primary" th:text="${policy.type.getFormattedPolicyType()}"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><strong>Částka:</strong></td>
+                        <td th:text="${policy.coverageAmount} + ' Kč'"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Předmět pojištění:</strong></td>
+                        <td th:text="${policy.subject}"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Platnost od:</strong></td>
+                        <td th:text="${policy.startDate}"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Platnost do:</strong></td>
+                        <td th:text="${policy.endDate}"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Pojistník:</strong></td>
+                        <td th:text="${policy.policyHolder.firstName} + ' ' + ${policy.policyHolder.lastName}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <a class="btn btn-warning" th:href="@{'/policy/' + ${policy.policyId} + '/edit'}">Editovat pojištění</a>
+        <a class="btn btn-danger" th:href="@{'/policy/' + ${policy.policyId} + '/delete'}">Odstranit pojištění</a>
+        <a class="btn btn-dark" th:href="@{'/insured/' + ${policy.policyHolder.userId} + '/detail'}">Zpět na profil</a>
+    </section>
+</article>
+</body>
+</html>
