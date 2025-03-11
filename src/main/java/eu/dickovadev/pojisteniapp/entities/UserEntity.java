@@ -1,15 +1,14 @@
 package eu.dickovadev.pojisteniapp.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import eu.dickovadev.pojisteniapp.models.enums.Role;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -28,6 +27,7 @@ public class UserEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role")
+    @JsonIgnore
     private Set<Role> roles = new HashSet<>();
 
     private String firstName;
@@ -42,8 +42,9 @@ public class UserEntity implements UserDetails {
 
     private String zipCode;
 
-    @OneToMany(mappedBy = "policyHolder", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private Set<InsurancePolicyEntity> insurancePolicies = new HashSet<>();
+    @JsonManagedReference
+    @OneToMany(mappedBy = "policyHolder", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private Set<PolicyEntity> policies = new HashSet<>();
 
     // region: Getters and Setters
     public long getUserId() {
@@ -122,12 +123,12 @@ public class UserEntity implements UserDetails {
         this.zipCode = zipCode;
     }
 
-    public Set<InsurancePolicyEntity> getInsurancePolicies() {
-        return insurancePolicies;
+    public Set<PolicyEntity> getPolicies() {
+        return policies;
     }
 
-    public void setInsurancePolicies(Set<InsurancePolicyEntity> insurancePolicies) {
-        this.insurancePolicies = insurancePolicies;
+    public void setPolicies(Set<PolicyEntity> policies) {
+        this.policies = policies;
     }
 
     // endregion
@@ -145,12 +146,9 @@ public class UserEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Create a list of authorities from all the roles
-        List<SimpleGrantedAuthority> authorities = roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.name())) // Convert role to SimpleGrantedAuthority
-                .collect(Collectors.toList()); // Collect the authorities into a list
-
-        return authorities;
+        return roles != null
+                ? roles.stream().map(role -> new SimpleGrantedAuthority(role.name())).collect(Collectors.toSet())
+                : Collections.emptySet();
     }
 
     @Override
@@ -181,5 +179,14 @@ public class UserEntity implements UserDetails {
 
     public void removeRole(Role role) {
         this.roles.remove(role);
+    }
+
+    @Override
+    public String toString() {
+        return "UserEntity{" +
+                "userId=" + userId +
+                ", fullName='" + firstName + " " + lastName + '\'' +
+                ", roles=" + roles +
+                '}';
     }
 }

@@ -1,54 +1,53 @@
 <!DOCTYPE html>
 <html lang="cs-cz" xmlns:th="http://www.thymeleaf.org">
-  <head th:replace="~{fragments/layout.html :: head}">
-    <title>Přihlášení</title>
-  </head>
-  <body class="custom-body">
-    <header th:replace="~{fragments/layout.html :: header}"></header>
+<head th:replace="~{fragments/layout.html :: head}">
+    <title th:text="${pageTitle}">Přihlášení</title>
+</head>
+<body class="custom-body">
+<header th:replace="~{fragments/layout.html :: header}"></header>
 
-    <div class="py-2 flash-message message-success" th:text="${success}" th:if="${success}"></div>
-    <div class="py-2 flash-message message-error" th:if="${param.error}">Neplatný email nebo heslo.</div>
+<div th:replace="~{fragments/layout.html :: flash-messages}"></div>
 
-    <article class="container">
-      <header>
-        <h1 class="display-6 mb-4 text-center">Přihlášení</h1>
-      </header>
+<article class="container justify-content-evenly">
+    <header>
+        <h1 class="display-4">Přihlášení</h1>
+    </header>
 
-      <section class="d-flex justify-content-center py-5 w-100" style="background-color: #343a40;">
-        <div class="row justify-content-center w-100">
-          <div class="col-md-8 col-lg-6">
-            <form th:action="@{/account/login}" method="post" class="d-flex flex-column gap-3 p-4 bg-dark text-white rounded shadow-lg">
+    <section class="account-section">
+        <div class="col-md-8 col-lg-6">
+            <form th:action="@{/account/login}" method="post"
+                  class="d-flex flex-column gap-3 p-5 bg-dark text-white rounded shadow-lg">
 
-              <!-- Email Field -->
-              <div class="form-group">
-                <label for="email" class="form-label">Uživatelský email</label>
-                <input id="email" name="email" type="email" class="form-control bg-dark text-white border-0 shadow-none" required />
-              </div>
+                <!-- Email Field -->
+                <div class="form-group">
+                    <label for="email" class="form-label">Uživatelský email</label>
+                    <input id="email" name="email" type="email"
+                           class="form-control bg-dark text-white border-0 shadow-none" required/>
+                </div>
 
-              <!-- Password Field -->
-              <div class="form-group">
-                <label for="password" class="form-label">Heslo</label>
-                <input id="password" name="password" type="password" class="form-control bg-dark text-white border-0 shadow-none" required />
-              </div>
+                <!-- Password Field -->
+                <div class="form-group">
+                    <label for="password" class="form-label">Heslo</label>
+                    <input id="password" name="password" type="password"
+                           class="form-control bg-dark text-white border-0 shadow-none" required/>
+                </div>
 
-              <!-- Submit Button -->
-              <div class="form-group">
-                <button type="submit" class="btn btn-info w-100">Přihlásit se</button>
-              </div>
+                <!-- Submit Button -->
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary w-100">Přihlásit se</button>
+                </div>
 
-              <!-- Register Link -->
-              <div class="form-group text-center">
-                <p>
-                  <a th:href="@{/account/register}" class="text-decoration-none text-light">Nemáte účet? Registrujte se</a>
-                </p>
-              </div>
+                <!-- Register Link -->
+                <div class="form-group text-center">
+                    <p>
+                        <a th:href="@{/account/register}" class="text-light">Nemáte účet? Registrujte se</a>
+                    </p>
+                </div>
             </form>
-          </div>
         </div>
-      </section>
+    </section>
+</article>
 
-    </article>
-
-    <footer th:replace="~{fragments/layout.html :: footer}"></footer>
-  </body>
+<footer th:replace="~{fragments/layout.html :: footer}"></footer>
+</body>
 </html>

@@ -1,7 +1,7 @@
 package eu.dickovadev.pojisteniapp.models.exceptions;
 
 public class PasswordsDoNotEqualException extends RuntimeException {
-    public PasswordsDoNotEqualException(){
+    public PasswordsDoNotEqualException() {
         super("Hesla se neshodují.");
     }
 }

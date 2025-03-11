@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="cs-cz" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout.html :: head}">
+    <title th:text="${pageTitle}">PojištěníApp - Přístup zamítnut</title>
+</head>
+<body class="custom-body">
+<header th:replace="~{fragments/layout.html :: header}"></header>
+
+<article class="text-center container justify-content-evenly">
+    <header>
+        <h1 class="display-4 mb-5">Přístup zamítnut</h1>
+    </header>
+    <section>
+        <h3>Nemáte oprávnění pro tuto stránku.</h3>
+
+        <a href="/" class="btn btn-dark mt-5">Vrátit se na hlavní stránku</a>
+    </section>
+</article>
+
+<footer th:replace="~{fragments/layout.html :: footer}"></footer>
+</body>
+</html>

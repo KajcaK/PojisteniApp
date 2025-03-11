@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="cs-cz" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout.html :: head}">
-    <title>Pojištěnci</title>
+    <title th:text="${pageTitle}">Přidat pojištění</title>
 </head>
 <body class="custom-body">
 <header th:replace="~{fragments/layout.html :: header}"></header>
 
-<div class="py-2 flash-message message-error" th:text="${error}" th:if="${error}"></div>
+<div th:replace="~{fragments/layout.html :: flash-messages}"></div>
 
 <article class="container">
     <header>
@@ -14,87 +14,104 @@
             th:text="'Nové pojištění pro ' + ${insuredFirstName} + ' ' + ${insuredLastName}"></h3>
     </header>
 
-    <section class="text-center">
-        <form class="d-flex flex-column gap-2"
-              method="post"
-              th:action="@{/policy/{userId}/create(userId=${userId})}"
-              th:object="${policyDTO}">
+    <section class="d-flex justify-content-center">
+        <div class="form-container">
+            <form class="d-flex flex-column gap-3"
+                  method="post"
+                  th:action="@{/policy/{userId}/create(userId=${userId})}"
+                  th:object="${policyDTO}">
 
-            <!-- Insured User hidden in form - to pass the userId to DTO -->
-            <div class="form-group">
-                <input type="hidden" id="insuredUser" th:field="*{insuredUser.userId}" />
-            </div>
-
-            <!-- Policy Type Dropdown -->
-            <div class="row">
+                <!-- Insured User hidden in form - to pass the userId to DTO -->
                 <div class="form-group">
-                    <label for="type" class="control-label">Typ pojištění</label>
-                    <select id="type" class="form-control" th:field="*{type}">
-                        <option value="" disabled selected>-- Vyberte pojištění --</option>
-                        <option th:each="policyType : ${policyTypes}"
-                                th:value="${policyType}"
-                                th:text="${policyType.getFormattedPolicyType()}">
-                        </option>
-                    </select>
-                    <small class="text-danger" th:errors="*{type}"></small>
+                    <input type="hidden" id="insuredUser" th:field="*{insuredUser.userId}" required/>
                 </div>
-            </div>
 
-            <!-- Coverage Amount and Subject -->
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="coverageAmount" class="control-label">Částka</label>
-                        <input id="coverageAmount" class="form-control" th:field="*{coverageAmount}" value="1000000"/>
-                        <small class="text-danger" th:errors="*{coverageAmount}"></small>
+                <!-- Policy Type Dropdown -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="type">Typ pojištění</label>
+                            <select id="type" class="form-control" th:field="*{type}" required>
+                                <option value="" disabled selected>-- Vyberte pojištění --</option>
+                                <option th:each="policyType : ${policyTypes}"
+                                        th:value="${policyType}"
+                                        th:text="${policyType.getFormattedPolicyType()}">
+                                </option>
+                            </select>
+                            <small class="text-danger" th:errors="*{type}"></small>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="subject" class="control-label">Předmět pojišění</label>
-                        <input id="subject" class="form-control" th:field="*{subject}" value="Byt"/>
-                        <small class="text-danger" th:errors="*{subject}"></small>
+
+                <!-- Coverage Amount and Subject -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="coverageAmount">Částka</label>
+                            <input id="coverageAmount" class="form-control" th:field="*{coverageAmount}" type="number"
+                                   value="1000000" required/>
+                            <small class="text-danger" th:errors="*{coverageAmount}"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="subject">Předmět pojištění</label>
+                            <input id="subject" class="form-control" th:field="*{subject}" type="text" value="Byt"
+                                   required/>
+                            <small class="text-danger" th:errors="*{subject}"></small>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Start Date and End Date -->
-            <div class="row">
-                <div class="form-group">
-                    <label for="startDate" class="control-label">Platnost od</label>
-                    <input type="date" id="startDate" class="form-control" th:field="*{startDate}" />
-                    <small class="text-danger" th:errors="*{startDate}"></small>
+                <!-- Start Date and End Date -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="startDate">Platnost od</label>
+                            <input type="date" id="startDate" class="form-control" th:field="*{startDate}"
+                                   pattern="\d{4}-\d{2}-\d{2}" required/>
+                            <small class="text-danger" th:errors="*{startDate}"></small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="endDate">Platnost do</label>
+                            <input type="date" id="endDate" class="form-control" th:field="*{endDate}"
+                                   pattern="\d{4}-\d{2}-\d{2}" required/>
+                            <small class="text-danger" th:errors="*{endDate}"></small>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="endDate" class="control-label">Platnost do</label>
-                    <input type="date" id="endDate" class="form-control" th:field="*{endDate}" />
-                    <small class="text-danger" th:errors="*{endDate}"></small>
-                </div>
-            </div>
-            <div class="row">
                 <!-- Policy Holder -->
-                <div class="row" id="policyHolderRow">
-                    <div class="form-group">
-                        <label for="policyHolder" class="control-label">Pojistník</label>
-                        <select id="policyHolder" class="form-control" th:field="*{policyHolder.userId}">
-                            <option th:value="0" selected disabled>-- Vyberte pojistníka --</option>
-                            <option th:each="user : ${users}"
-                                    th:value="${user.userId}"
-                                    th:text="${user.firstName + ' ' + user.lastName}">
-                            </option>
-                        </select>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="policyHolder">Pojistník</label>
+                            <select id="policyHolder" class="form-control" th:field="*{policyHolder.userId}" required>
+                                <option value="0" selected disabled>-- Vyberte pojistníka --</option>
+                                <option th:each="user : ${users}"
+                                        th:value="${user.userId}"
+                                        th:text="${@stringUtil.formatFullNameWithId(user)}">
+                                </option>
+                            </select>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <button type="submit" class="btn btn-dark">Uložit</button>
-            </div>
-        </form>
+                <div class="form-group text-center mt-3">
+                    <button type="submit" class="btn btn-dark px-4">Uložit</button>
+                </div>
+            </form>
 
-        <a class="btn btn-dark mt-4" th:href="@{'/insured/' + ${userId} + '/detail'}">Zpět na profil</a>
+            <div class="text-center mt-3">
+                <a class="btn btn-outline-dark" th:href="@{'/insured/' + ${userId} + '/detail'}">Zpět na profil</a>
+            </div>
+        </div>
     </section>
+
 </article>
+<footer th:replace="~{fragments/layout.html :: footer}"></footer>
 </body>
 </html>

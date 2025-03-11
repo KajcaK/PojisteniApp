@@ -17,7 +17,7 @@ public class AccountDTO {
 
     @NotBlank(message = "Vyplňte uživatelské heslo")
     @Size(min = 10, message = "Heslo musí mít alespoň 10 znaků")
-    private String confirmPassword;
+    private String confirmedPassword;
 
     //region: getters and setters
     public String getEmail() {
@@ -36,16 +36,24 @@ public class AccountDTO {
         this.password = password;
     }
 
-    public String getConfirmPassword() {
-        return confirmPassword;
+    public String getConfirmedPassword() {
+        return confirmedPassword;
     }
 
-    public void setConfirmPassword(String confirmPassword) {
-        this.confirmPassword = confirmPassword;
+    public void setConfirmedPassword(String confirmedPassword) {
+        this.confirmedPassword = confirmedPassword;
     }
 
     public long getUserId() {
         return userId;
     }
     //endregion
+
+    @Override
+    public String toString() {
+        return "AccountDTO{" +
+                "userId=" + userId +
+                ", email='" + email +
+                '}';
+    }
 }

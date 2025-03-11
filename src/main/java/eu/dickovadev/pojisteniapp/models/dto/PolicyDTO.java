@@ -1,19 +1,21 @@
 package eu.dickovadev.pojisteniapp.models.dto;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import eu.dickovadev.pojisteniapp.models.enums.PolicyType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 public class PolicyDTO {
     private long policyId;
 
     private PolicyType type;
 
-    @NotBlank(message = "Vyplňte částku")
-    private String coverageAmount;
+    @NotNull(message = "Vyplňte částku")
+    private long coverageAmount;
 
     @NotBlank(message = "Vyplňte předmět pojištění")
     private String subject;
@@ -27,9 +29,14 @@ public class PolicyDTO {
     private LocalDate endDate;
 
     @NotNull(message = "Vyberte pojistníka")
-    private UserDTO policyHolder;
+    private PolicyUserDTO policyHolder;
 
-    private UserDTO insuredUser;
+    private PolicyUserDTO insuredUser;
+
+    private boolean sameUser;
+
+    @JsonManagedReference
+    private Set<EventDTO> events;
 
     //region: getters and setters
     public long getPolicyId() {
@@ -48,11 +55,11 @@ public class PolicyDTO {
         this.type = type;
     }
 
-    public String getCoverageAmount() {
+    public long getCoverageAmount() {
         return coverageAmount;
     }
 
-    public void setCoverageAmount(String coverageAmount) {
+    public void setCoverageAmount(long coverageAmount) {
         this.coverageAmount = coverageAmount;
     }
 
@@ -80,20 +87,46 @@ public class PolicyDTO {
         this.endDate = endDate;
     }
 
-    public UserDTO getPolicyHolder() {
+    public PolicyUserDTO getPolicyHolder() {
         return policyHolder;
     }
 
-    public void setPolicyHolder(UserDTO policyHolder) {
+    public void setPolicyHolder(PolicyUserDTO policyHolder) {
         this.policyHolder = policyHolder;
     }
 
-    public UserDTO getInsuredUser() {
+    public PolicyUserDTO getInsuredUser() {
         return insuredUser;
     }
 
-    public void setInsuredUser(UserDTO insuredUser) {
+    public void setInsuredUser(PolicyUserDTO insuredUser) {
         this.insuredUser = insuredUser;
     }
+
+    public Set<EventDTO> getEvents() {
+        return events;
+    }
+
+    public void setEvents(Set<EventDTO> events) {
+        this.events = events;
+    }
+
+    public boolean isSameUser() {
+        return sameUser;
+    }
+
+    public void setSameUser(boolean sameUser) {
+        this.sameUser = sameUser;
+    }
     //endregion
+
+    @Override
+    public String toString() {
+        return "PolicyDTO{" +
+                "policyId=" + policyId +
+                ", policyType=" + type +
+                ", policyHolder=" + policyHolder.getUserId() + " " + policyHolder.getEmail() +
+                ", insuredUser=" + insuredUser.getUserId() + " " + insuredUser.getEmail() +
+                '}';
+    }
 }

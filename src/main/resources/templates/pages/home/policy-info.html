@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="cs-cz" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout.html :: head}">
+    <title th:text="${pageTitle}">Pojištění</title>
+</head>
+<body class="custom-body">
+<header th:replace="~{fragments/layout.html :: header}"></header>
+
+<article class="container justify-content-start py-5">
+    <header class="text-center">
+        <h3 class="display-4">Nabídka pojištění</h3>
+    </header>
+    <section class="mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 offset-md-2">
+                    <div class="accordion " id="insuranceAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading1">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapse1" aria-expanded="true" aria-controls="collapse1">
+                                    <i class="bi bi-heart-pulse ms-auto me-2"></i>
+                                    Životní pojištění
+                                </button>
+                            </h2>
+                            <div id="collapse1" class="accordion-collapse collapse show" aria-labelledby="heading1"
+                                 data-bs-parent="#insuranceAccordion">
+                                <div class="accordion-body">
+                                    <strong>Životní pojištění</strong> je klíčové pro ochranu vašich blízkých v případě
+                                    nečekané události, jako je smrt nebo vážné zranění.
+                                    Toto pojištění vám poskytuje finanční jistotu a pomáhá zajistit, že vaši rodinu
+                                    nezasáhne vaše nepřítomnost příliš tvrdě.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading2">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
+                                    <i class="bi bi-bandaid ms-auto me-2"></i>
+                                    Úrazové pojištění
+                                </button>
+                            </h2>
+                            <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="heading2"
+                                 data-bs-parent="#insuranceAccordion">
+                                <div class="accordion-body">
+                                    <strong>Úrazové pojištění</strong> vám pomůže pokrýt náklady spojené s úrazy, které
+                                    mohou nastat kdykoli.
+                                    Ať už jde o pracovní úraz nebo nehody během volného času, toto pojištění vás chrání
+                                    před finančními následky.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading3">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapse3" aria-expanded="false" aria-controls="collapse3">
+                                    <i class="bi bi-airplane-engines ms-auto me-2"></i>
+                                    Cestovní pojištění
+                                </button>
+                            </h2>
+                            <div id="collapse3" class="accordion-collapse collapse" aria-labelledby="heading3"
+                                 data-bs-parent="#insuranceAccordion">
+                                <div class="accordion-body">
+                                    <strong>Cestovní pojištění</strong> je nezbytné pro každého, kdo cestuje do
+                                    zahraničí.
+                                    Pokrývá vám zdravotní péči, ztrátu zavazadel, zpoždění letu a mnoho dalších rizik,
+                                    která mohou nastat během vaší cesty.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading4">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapse4" aria-expanded="false" aria-controls="collapse4">
+                                    <i class="bi bi-car-front ms-auto me-2"></i>
+                                    Povinné ručení
+                                </button>
+                            </h2>
+                            <div id="collapse4" class="accordion-collapse collapse" aria-labelledby="heading4"
+                                 data-bs-parent="#insuranceAccordion">
+                                <div class="accordion-body">
+                                    <strong>Povinné ručení</strong> je zákonem stanovené pojištění, které musíte mít na
+                                    každé motorové vozidlo.
+                                    Toto pojištění kryje škody způsobené vaší vinou na zdraví nebo majetku jiných osob.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading5">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapse5" aria-expanded="false" aria-controls="collapse5">
+                                    <i class="bi bi-truck-front ms-auto me-2"></i>
+                                    Havarijní pojištění
+                                </button>
+                            </h2>
+                            <div id="collapse5" class="accordion-collapse collapse" aria-labelledby="heading5"
+                                 data-bs-parent="#insuranceAccordion">
+                                <div class="accordion-body">
+                                    <strong>Havarijní pojištění</strong> pokrývá škody na vašem vozidle v případě
+                                    nehody, vandalismu nebo přírodních katastrof.
+                                    Je to ideální pro ochranu vaší investice do auta.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading6">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapse6" aria-expanded="false" aria-controls="collapse6">
+                                    <i class="bi bi-house-door ms-auto me-2"></i>
+                                    Pojištění majetku
+                                </button>
+                            </h2>
+                            <div id="collapse6" class="accordion-collapse collapse" aria-labelledby="heading6"
+                                 data-bs-parent="#insuranceAccordion">
+                                <div class="accordion-body">
+                                    <strong>Pojištění majetku</strong> chrání váš domov a cennosti před škodami
+                                    způsobenými požárem, povodní, krádeží a dalšími nehodami.
+                                    Můžete si být jisti, že v případě nepředvídaných událostí budete chráněni.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading7">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapse7" aria-expanded="false" aria-controls="collapse7">
+                                    <i class="bi bi-shield-lock ms-auto me-2"></i>
+                                    Pojištění odpovědnosti
+                                </button>
+                            </h2>
+                            <div id="collapse7" class="accordion-collapse collapse" aria-labelledby="heading7"
+                                 data-bs-parent="#insuranceAccordion">
+                                <div class="accordion-body">
+                                    <strong>Pojištění odpovědnosti</strong> vás chrání před finančními nároky, pokud
+                                    způsobíte škody na majetku nebo zdraví jiných osob.
+                                    Tento typ pojištění je nezbytný pro každodenní život.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading8">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapse8" aria-expanded="false" aria-controls="collapse8">
+                                    <i class="bi bi-heart ms-auto me-2"></i>
+                                    Pojištění mazlíčka
+                                </button>
+                            </h2>
+                            <div id="collapse8" class="accordion-collapse collapse" aria-labelledby="heading8"
+                                 data-bs-parent="#insuranceAccordion">
+                                <div class="accordion-body">
+                                    <strong>Pojištění mazlíčka</strong> se postará o vaše zvíře, pokud se dostane do
+                                    zdravotních problémů nebo utrpí úraz.
+                                    Zajistí vám pokrytí nákladů na veterinární péči a léčbu.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</article>
+<footer th:replace="~{fragments/layout.html :: footer}"></footer>
+</body>
+</html>

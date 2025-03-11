@@ -106,7 +106,7 @@ public class UserDTO {
         return userId;
     }
 
-    public void setUserId(long userId){
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 
@@ -118,12 +118,21 @@ public class UserDTO {
         this.roles = roles;
     }
 
-    public Set<PolicyDTO> getPolicies(){
+    public Set<PolicyDTO> getPolicies() {
         return policies;
     }
 
-    public void setPolicies(Set<PolicyDTO> policies){
+    public void setPolicies(Set<PolicyDTO> policies) {
         this.policies = policies;
     }
     //endregion
+
+    @Override
+    public String toString() {
+        return "UserDTO{" +
+                "userId=" + userId +
+                ", fullName='" + firstName + " " + lastName + '\'' +
+                ", roles=" + roles +
+                '}';
+    }
 }

@@ -2,61 +2,140 @@
 <html lang="cs-cz" xmlns:th="http://www.thymeleaf.org">
 <head th:fragment="head">
     <meta charset="UTF-8">
-    <title>PojištěníApp</title>
-    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}" type="text/css">
-    <link rel="stylesheet" th:href="@{/styles/styles.css}">
-    <script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
-    <!-- TODO: complete head with description, keywords, author and icon -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle}">PojištěníApp</title>
+    <!-- Meta Tags for SEO -->
+    <meta name="description"
+          content="PojištěníApp je komplexní řešení pro správu pojištění, sledování událostí pojištění a nahlašování událostí. Umožňuje uživatelům spravovat své pojistné smlouvy, zobrazit detaily pojistky a získat aktuální informace o událostech spojených s pojištěním.">
+    <meta name="keywords"
+          content="pojištění, pojistky, pojistné události , správa pojištění, sledování pojistek, aplikace pro pojištění">
+    <meta name="author" content="KajcaK (GitHub: https://github.com/KajcaK)">
+    <!-- CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" type="text/css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/icons/bootstrap-icons/bootstrap-icons.min.css}">
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" th:href="@{/icons/favicon.svg}">
+    <!-- JS -->
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <th:block th:if="${useJQuery}">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    </th:block>
+    <th:block th:if="${useCharts}">
+        <script th:src="@{/js/apexcharts.min.js}"></script>
+    </th:block>
 </head>
 <body>
-    <header th:fragment="header">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3 px-5" aria-label="Main Navigation">
-            <!-- logo section -->
-            <a class="navbar-brand me-5" th:href="@{/}" aria-label="Home">
-                PojištěníApp
-            </a>
-            <!-- hamburger icon -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <!-- links section -->
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li>
-                        <a class="nav-link mx-1" th:href="@{/insured}" aria-label="Insured Section">Pojištěnci</a>
-                    </li>
-                    <li>
-                        <a class="nav-link mx-1" th:href="@{/policy}" aria-label="Insurance Section">Pojištění</a>
-                    </li>
-                    <li>
-                        <a class="nav-link mx-1" th:href="@{#}" aria-label="Events Section">Události</a>
-                    </li>
-                    <li>
-                        <a class="nav-link mx-1" th:href="@{/about}" aria-label="About the Application">O aplikaci...</a>
-                    </li>
-                </ul>
+<header th:fragment="header">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3 px-5" aria-label="Main Navigation">
+        <!-- logo section -->
+        <a class="navbar-brand me-5" th:href="@{/}" aria-label="Home">
+            <i class="bi bi-umbrella me-2"></i>
+            PojištěníApp
+        </a>
+        <!-- hamburger icons -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- links section -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <!-- Logged in: link to their detail page -->
+                <li sec:authorize="isAuthenticated() and !hasRole('ROLE_ADMIN')">
+                    <a class="nav-link mx-1" th:href="@{'/insured/' + ${session.userId} + '/detail'}"
+                       aria-label="User Profile">Profil</a>
+                </li>
+                <!-- Admin role: link to customers index -->
+                <li sec:authorize="hasRole('ROLE_ADMIN')">
+                    <a class="nav-link mx-1" th:href="@{/insured}" aria-label="Admin User Index">Zákazníci</a>
+                </li>
+                <!-- Admin role: link to policy index -->
+                <li sec:authorize="hasRole('ROLE_ADMIN')">
+                    <a class="nav-link mx-1" th:href="@{/policy}" aria-label="Insurance Section">Pojištění</a>
+                </li>
+                <!-- Admin role: link to event index -->
+                <li sec:authorize="hasRole('ROLE_ADMIN')">
+                    <a class="nav-link mx-1" th:href="@{/event}" aria-label="Events Section">Události</a>
+                </li>
+                <!-- Admin role: link to event index -->
+                <li sec:authorize="hasRole('ROLE_ADMIN')">
+                    <a class="nav-link mx-1" th:href="@{/admin}" aria-label="Admin Section">Admin sekce</a>
+                </li>
+                <!-- Links for everyone -->
+                <li sec:authorize="!hasRole('ROLE_ADMIN')">
+                    <a class="nav-link mx-1" th:href="@{/policy-info}" aria-label="About Policies">O Pojištění</a>
+                </li>
+                <li sec:authorize="!hasRole('ROLE_ADMIN')">
+                    <a class="nav-link mx-1" th:href="@{/event-info}" aria-label="About Events">O Událostech</a>
+                </li>
+                <li sec:authorize="!hasRole('ROLE_ADMIN')">
+                    <a class="nav-link mx-1" th:href="@{/about}" aria-label="About the Application">O Aplikaci...</a>
+                </li>
+            </ul>
 
-                <!-- right-aligned links section -->
-                <ul class="navbar-nav ms-auto">
-                    <li sec:authorize="isAnonymous()">
-                        <a class="nav-link mx-1" th:href="@{/account/login}">Přihlásit se</a>
-                    </li>
-                    <li sec:authorize="isAnonymous()">
-                        <a class="nav-link mx-1" th:href="@{/account/register}">Registrovat</a>
-                    </li>
-                    <li>
-                        <form method="post" th:action="@{/account/logout}">
-                            <button class="btn btn-dark" sec:authorize="isAuthenticated()">Odhlásit se</button>
-                        </form>
-                    </li>
-                </ul>
-            </div>
-            <!-- TODO: add elements for login, register and logout -->
-        </nav>
-    </header>
+            <!-- right-aligned links section -->
+            <ul class="navbar-nav ms-auto">
+                <li sec:authorize="isAuthenticated()">
+                    <a class="btn btn-dark mx-1 disabled" th:text="${session.badge}"></a>
+                </li>
+                <li sec:authorize="isAnonymous()">
+                    <a class="nav-link mx-1" th:href="@{/account/login}">Přihlásit se</a>
+                </li>
+                <li sec:authorize="isAnonymous()">
+                    <a class="nav-link mx-1" th:href="@{/account/register}">Registrovat</a>
+                </li>
+                <li>
+                    <form method="post" th:action="@{/account/logout}">
+                        <button class="btn btn-dark" sec:authorize="isAuthenticated()">Odhlásit se</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
 
-    <footer th:fragment="footer" class="bg-dark text-white p-3 ps-5 mt-auto">
+<!-- Flash Messages -->
+<div th:fragment="flash-messages">
+    <div class="py-2 flash-message message-error" th:if="${error}">
+        <i class="bi bi-exclamation-circle-fill"></i>
+        <span th:text="${error}"></span>
+    </div>
+    <div class="py-2 flash-message message-success" th:if="${success}">
+        <i class="bi bi-check-circle-fill"></i>
+        <span th:text="${success}"></span>
+    </div>
+</div>
+
+<!-- Pagination -->
+<nav th:fragment="pagination(baseUrl, currentPage, totalPages)">
+    <ul class="pagination" th:if="${totalPages > 1}">
+        <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+            <a class="page-link" th:href="@{${baseUrl}(page=${currentPage - 1})}">Předchozí</a>
+        </li>
+        <li class="page-item" th:each="pageNum : ${#numbers.sequence(1, totalPages)}"
+            th:classappend="${pageNum == currentPage} ? 'active'">
+            <a class="page-link" th:href="@{${baseUrl}(page=${pageNum})}" th:text="${pageNum}"></a>
+        </li>
+        <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+            <a class="page-link" th:href="@{${baseUrl}(page=${currentPage + 1})}">Další</a>
+        </li>
+    </ul>
+</nav>
+
+<footer th:fragment="footer" class="bg-dark text-white p-3 mt-auto d-flex justify-content-between align-items-center">
+    <div>
         &copy; 2025 PojištěníApp
-    </footer>
+    </div>
+    <div class="text-right">
+        <p class="mb-0">Foto
+            <a href="https://www.pexels.com/@kindelmedia/" target="_blank" rel="noopener" class="text-white">Kindel
+                Media</a>
+            na
+            <a href="https://www.pexels.com/" target="_blank" rel="noopener" class="text-white">Pexels</a>
+        </p>
+    </div>
+</footer>
 </body>
 </html>

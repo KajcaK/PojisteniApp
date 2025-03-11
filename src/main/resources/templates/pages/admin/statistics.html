@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="cs-cz" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head th:replace="~{fragments/layout.html :: head}">
+    <title th:text="${pageTitle}">Statistiky</title>
+</head>
+<body class="custom-body">
+<header th:replace="~{fragments/layout.html :: header}"></header>
+
+<!-- Statistics Dashboard -->
+<article class="statistics-dashboard">
+
+    <div id="loading" class="text-center">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p>Načítám...</p>
+    </div>
+
+    <!-- Users Section -->
+    <section class="statistics-section" id="users">
+        <h3 class="text-center my-5 display-6">
+            <i class="bi bi-file-person me-2"></i>
+            Statistiky účtů
+        </h3>
+
+        <div class="row mb-4 g-2">
+            <div class="col-12 col-md-4 col-lg-4">
+                <div class="chart-card">
+                    <div class="chart-title"><i class="bi bi-person me-2"></i>Uživatelé</div>
+                    <div id="userIndividualChart"></div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4 col-lg-3">
+                <div class="chart-card">
+                    <div class="chart-title"><i class="bi bi-bar-chart me-2"></i>Celkem</div>
+                    <!-- List Group for statistics -->
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong><i class="bi bi-person me-2"></i>Účtů:</strong>
+                            <span th:text="${statistics.userStats.totalUserCount}"></span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong><i class="bi bi-person-exclamation me-2"></i>Nevyplněné:</strong>
+                            <span th:text="${statistics.userStats.usersWithMissingNames}"></span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong><i class="bi bi-person-up me-2"></i>Aktivní účty:</strong>
+                            <span th:text="${statistics.userStats.activeUserCount}"></span>
+                        </li>
+                    </ul>
+                    <ul class="list-group list-group-flush" id="roleList">
+                    </ul>
+                </div>
+            </div>
+            <div class="col-12 col-md-4 col-lg-4">
+                <div class="chart-card">
+                    <div class="chart-title"><i class="bi bi-shield me-2"></i>Účty podle rolí</div>
+                    <div id="roleChart"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Policy Section -->
+    <section class="statistics-section" id="policy">
+        <h3 class="text-center my-5 display-6">
+            <i class="bi bi-file-earmark-medical me-2"></i>
+            Statistiky pojištění
+        </h3>
+
+        <div class="row mb-4 g-2">
+
+            <!-- Policy Type Chart Card -->
+            <div class="col-12 col-md-4 col-lg-4">
+                <div class="chart-card">
+                    <div class="chart-title"><i class="bi bi-clipboard me-2"></i>Pojištění podle typu</div>
+                    <div id="policyTypeChart"></div>
+                </div>
+            </div>
+
+            <!-- Total Policy Card -->
+            <div class="col-12 col-md-4 col-lg-4">
+                <div class="chart-card">
+                    <div class="chart-title"><i class="bi bi-bar-chart me-2"></i>Celkem</div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong><i class="bi bi-clipboard2-data me-2"></i>Pojištění:</strong>
+                            <span th:text="${statistics.policyStats.totalPolicyCount}"></span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong><i class="bi bi-calendar-check me-2"></i>Aktivní:</strong>
+                            <span th:text="${statistics.policyStats.totalActivePolicies}"></span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong><i class="bi bi-cash-coin me-2"></i>Průměr:</strong>
+                            <span th:text="${@numberUtil.formatCurrency(statistics.avgStats.averagePolicyCoverage)}"></span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong><i class="bi bi-hourglass-split me-2"></i>Průměrná doba:</strong>
+                            <span th:text="${@numberUtil.formatNumberDays(statistics.avgStats.averagePolicyDuration)}"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Policy Vs Active Chart Card -->
+            <div class="col-12 col-md-4 col-lg-4">
+                <div class="chart-card">
+                    <div class="chart-title"><i class="bi bi-clipboard-data me-2"></i>Pojistné smlouvy</div>
+                    <div id="policyTotalVsActiveChart"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Events Section -->
+    <section class="statistics-section" id="events">
+        <h3 class="text-center my-5 display-6">
+            <i class="bi bi-clipboard2-pulse me-2"></i>
+            Statistiky pojistných událostí
+        </h3>
+
+        <div class="row mb-4 g-2">
+            <!-- Event Status Chart Card -->
+            <div class="col-12 col-md-6 col-lg-6">
+                <div class="chart-card">
+                    <div class="chart-title"><i class="bi bi-check-circle me-2"></i>Události podle stavu</div>
+                    <div id="eventStatusChart"></div>
+                </div>
+            </div>
+            <!-- Event Type Chart Card -->
+            <div class="col-12 col-md-6 col-lg-6">
+                <div class="chart-card">
+                    <div class="chart-title"><i class="bi bi-exclamation-triangle me-2"></i>Události podle typu</div>
+                    <div id="eventTypeChart"></div>
+                </div>
+            </div>
+            <div class="row mb-4 g-2">
+                <!--  Event Amounts Chart -->
+                <div class="col-12 col-md-4 col-lg-4">
+                    <div class="chart-card">
+                        <div class="chart-title"><i class="bi bi-cash-stack me-2"></i>Celková hodnota krytí</div>
+                        <div id="eventAmountsChart"></div>
+                    </div>
+                </div>
+                <!-- Total Event Card -->
+                <div class="col-12 col-md-4 col-lg-4">
+                    <div class="chart-card">
+                        <div class="chart-title"><i class="bi bi-bar-chart me-2"></i>Celkem</div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <strong><i class="bi bi-calendar-plus me-2"></i>Událostí:</strong>
+                                <span th:text="${statistics.eventStats.totalEventCount}"></span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <strong><i class="bi bi-cash-coin me-2"></i>Výše krytí:</strong>
+                                <span th:text="${@numberUtil.formatCurrency(statistics.eventStats.totalOriginalClaimAmountEvents)}"></span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <strong><i class="bi bi-piggy-bank me-2"></i>Vyplaceno:</strong>
+                                <span th:text="${@numberUtil.formatCurrency(statistics.eventStats.totalAmountPaid)}"></span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <strong><i class="bi bi-file-bar-graph me-2"></i>Průměrná hodnota:</strong>
+                                <span th:text="${@numberUtil.formatCurrency(statistics.avgStats.averageEventClaimAmount)}"></span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- Coverage Chart -->
+                <div class="col-12 col-md-4 col-lg-4">
+                    <div class="chart-card">
+                        <div class="chart-title"><i class="bi bi-coin me-2"></i>Výše krytí</div>
+                        <div id="coverageChart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</article>
+
+<div id="statistics" th:data-statistics="${statistics}"></div>
+
+<footer th:replace="~{fragments/layout.html :: footer}"></footer>
+
+<script th:src="@{/js/statistics.js}"></script>
+</body>
+</html>

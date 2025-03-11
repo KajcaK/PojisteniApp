@@ -1,38 +1,42 @@
 <!DOCTYPE html>
 <html lang="cs-cz" xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="~{fragments/layout.html :: head}">
-        <title>O PojištěníApp</title>
-    </head>
-    <body class="custom-body">
-        <header th:replace="~{fragments/layout.html :: header}"></header>
+<head th:replace="~{fragments/layout.html :: head}">
+    <title th:text="${pageTitle}">O PojištěníApp</title>
+</head>
+<body class="custom-body">
+<header th:replace="~{fragments/layout.html :: header}"></header>
 
-        <article class="container">
-            <header class="text-center">
-                <h1 class="display-4 mb-4">O aplikaci PojištěníApp</h1>
-                <h3 class="lead">Vítejte v PojištěníApp – aplikaci, která vám usnadní správu pojištění.</h3>
-            </header>
-            <section class="py-4">
-                <h2>Hlavní funkce</h2>
-                <ul>
-                  <li>Široká nabídka pojištění</li>
-                  <li>Jednoduchá správa pojištění</li>
-                  <li>Online hlášení škod</li>
-                </ul>
+<article class="container py-5">
+    <header class="mb-4 text-center">
+        <h1 class="display-4 mb-3">O aplikaci PojištěníApp</h1>
+        <h3 class="lead">Vítejte v PojištěníApp – aplikaci, která vám usnadní správu pojištění.</h3>
+    </header>
 
-                <h2>Jak to funguje</h2>
-                <ol>
-                  <li><strong>Registrace:</strong> Zaregistrujte se během několika minut.</li>
-                  <li><strong>Výběr pojištění:</strong> Vyberte pojištění podle svých potřeb.</li>
-                  <li><strong>Správa pojištění:</strong> Jednoduše upravujte a kontrolujte své pojištění.</li>
-                  <li><strong>Hlášení škod:</strong> Hlaste škody a sledujte jejich stav v aplikaci.</li>
-                </ol>
+    <section class="p-5">
+        <h2 class="h2-about">Hlavní funkce</h2>
+        <ul class="feature-list">
+            <li>Široká nabídka pojištění</li>
+            <li>Jednoduchá správa pojištění</li>
+            <li>Online hlášení škod</li>
+        </ul>
 
-                <h2>Začněte ještě dnes</h2>
-                <!-- TODO: add register link to this text -->
-                <p class="lead">Chcete mít své pojištění pod kontrolou? Registrujte se u PojištěníApp a začněte spravovat své pojištění rychle a bezpečně!</p>
-            </section>
-        </article>
+        <h2 class="h2-about">Jak to funguje</h2>
+        <ol class="steps-list">
+            <li><strong>Registrace:</strong> Zaregistrujte se během několika minut.</li>
+            <li><strong>Výběr pojištění:</strong> Vyberte pojištění podle svých potřeb.</li>
+            <li><strong>Správa pojištění:</strong> Jednoduše kontrolujte své pojištění.</li>
+            <li><strong>Hlášení škod:</strong> Hlaste škody a sledujte jejich stav v aplikaci.</li>
+        </ol>
 
-        <footer th:replace="~{fragments/layout.html :: footer}"></footer>
-    </body>
+        <h2 class="h2-about">Začněte ještě dnes</h2>
+
+        <p class="lead">Chcete mít své pojištění pod kontrolou? <br>
+            <strong><a class="cta-button" th:href="@{/account/register}">Začněte nyní</a></strong>
+            a spravujte svá pojištění rychle a bezpečně!
+        </p>
+    </section>
+</article>
+
+<footer th:replace="~{fragments/layout.html :: footer}"></footer>
+</body>
 </html>

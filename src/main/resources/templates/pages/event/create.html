@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="cs-cz" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout.html :: head}">
+    <title th:text="${pageTitle}">Vytvořit událost</title>
+</head>
+<body class="custom-body">
+<header th:replace="~{fragments/layout.html :: header}"></header>
+
+<div th:replace="~{fragments/layout.html :: flash-messages}"></div>
+
+<article class="container">
+    <header>
+        <h3 class="display-6 mb-4">Nová událost</h3>
+    </header>
+
+    <section class="d-flex justify-content-center">
+        <div class="form-container">
+            <form class="d-flex flex-column gap-3"
+                  method="post"
+                  th:action="@{/event/{policyId}/create(policyId=${policyId})}"
+                  th:object="${eventDTO}">
+
+                <input type="hidden" id="policyId" th:field="*{policyId}"/>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="eventType">Typ události</label>
+                            <select id="eventType" class="form-control" th:field="*{eventType}" required>
+                                <option value="" disabled selected>-- Vyberte událost --</option>
+                                <option th:each="eventType : ${eventTypes}"
+                                        th:value="${eventType}"
+                                        th:text="${eventType.getFormattedEventType()}">
+                                </option>
+                            </select>
+                            <small class="text-danger" th:errors="*{eventType}"></small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="eventStatus">Stav události</label>
+                            <select id="eventStatus" class="form-control" th:field="*{eventStatus}" required>
+                                <option value="" disabled selected>-- Vyberte stav --</option>
+                                <option th:each="status : ${eventStatus}"
+                                        th:value="${status}"
+                                        th:text="${status.getFormattedEventStatus()}">
+                                </option>
+                            </select>
+                            <small class="text-danger" th:errors="*{eventStatus}"></small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventDescription">Popis události</label>
+                    <textarea id="eventDescription" class="form-control" th:field="*{eventDescription}" rows="3"
+                              required></textarea>
+                    <small class="text-danger" th:errors="*{eventDescription}"></small>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="originalClaimAmount">Částka</label>
+                            <input id="originalClaimAmount" class="form-control" type="number"
+                                   th:field="*{originalClaimAmount}" required/>
+                            <small class="text-danger" th:errors="*{originalClaimAmount}"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="eventDate">Datum události</label>
+                            <input type="date" id="eventDate" class="form-control" th:field="*{eventDate}" required/>
+                            <small class="text-danger" th:errors="*{eventDate}"></small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group text-center mt-3">
+                    <button type="submit" class="btn btn-dark px-4">Uložit</button>
+                </div>
+            </form>
+
+            <div class="text-center mt-3">
+                <a class="btn btn-outline-dark" th:href="@{'/policy/' + ${policyId} + '/detail'}">Zpět na pojištění</a>
+            </div>
+        </div>
+    </section>
+</article>
+<footer th:replace="~{fragments/layout.html :: footer}"></footer>
+</body>
+</html>

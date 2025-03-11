@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="cs-cz" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout.html :: head}">
+    <title th:text="${pageTitle}">Admin Sekce</title>
+</head>
+<body class="admin-body">
+<header th:replace="~{fragments/layout.html :: header}"></header>
+
+<article class="container-fluid m-0 w-100 admin-article ps-0">
+    <section class="mt-0 w-100 admin-section">
+        <div class="row m-0 w-100">
+            <!-- Side Navigation -->
+            <div class="col-md-2 bg-dark sidebar d-flex flex-column">
+                <div class="list-group">
+                    <button type="button" class="list-group-item list-group-item-action my-1 btn-dark-outline"
+                            id="logsButton">
+                        Historie změn
+                    </button>
+                    <button type="button" class="list-group-item list-group-item-action my-1 btn-dark-outline"
+                            id="nullUsersButton">
+                        Nevyplnění uživatelé
+                    </button>
+                    <button type="button" class="list-group-item list-group-item-action my-1 btn-dark-outline"
+                            id="adminUsersButton">
+                        Admin účty
+                    </button>
+                    <button type="button" class="list-group-item list-group-item-action my-1 btn-dark-outline"
+                            id="statsButton ">
+                        <a class="nav-link mx-1" th:href="@{/admin/statistics}"
+                           aria-label="Admin Section">Statistiky</a>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="col-md-10 mb-5">
+                <div class="container m-3 content-wrapper ">
+                    <div id="contentArea">
+                        <!-- Content will be loaded dynamically here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</article>
+
+<footer th:replace="~{fragments/layout.html :: footer}"></footer>
+
+</body>
+<script>
+    $(document).ready(function() {
+    let currentBaseUrl = '/admin/audit-logs';
+
+    // Initial load
+    $('#contentArea').load(currentBaseUrl);
+
+    // Button Clicks
+    $('#logsButton').on('click', function() {
+        currentBaseUrl = '/admin/audit-logs';
+        $('#contentArea').load(currentBaseUrl);
+    });
+
+    $('#nullUsersButton').on('click', function() {
+        currentBaseUrl = '/admin/null-users';
+        $('#contentArea').load(currentBaseUrl);
+    });
+
+    $('#adminUsersButton').on('click', function() {
+        currentBaseUrl = '/admin/admin-users';
+        $('#contentArea').load(currentBaseUrl);
+    });
+
+    // Pagination Click Handling
+    $(document).on('click', '.pagination .page-link', function(event) {
+        event.preventDefault();
+
+        const pageNum = $(this).attr('href').split('page=')[1];
+
+        $('#contentArea').load(currentBaseUrl + '?page=' + pageNum);
+    });
+});
+</script>
+</html>

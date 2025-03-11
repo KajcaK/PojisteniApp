@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="cs-cz" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout.html :: head}">
+    <title th:text="${pageTitle}">Událost</title>
+</head>
+<body class="custom-body">
+<header th:replace="~{fragments/layout.html :: header}"></header>
+
+<div th:replace="~{fragments/layout.html :: flash-messages}"></div>
+
+<article class="container justify-content-evenly">
+    <header>
+        <h3 class="display-6 mb-4">
+            Detail události pojištěné osoby:
+            <a th:href="@{'/insured/' + ${policy.insuredUser.userId} + '/detail'}">
+                <span th:text="${@stringUtil.formatFullName(policy.insuredUser)}"></span>
+            </a>
+        </h3>
+    </header>
+
+    <section class="text-center">
+        <div class="container ">
+            <!-- Event detail table -->
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th colspan="2" class="text-center text-primary"
+                            th:text="${event.eventType.getFormattedEventType()}"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><strong>Datum vzniku události:</strong></td>
+                        <td th:text="${@dateUtil.formatToDdMmYyyy(event.eventDate)}"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Popis:</strong></td>
+                        <td th:text="${event.eventDescription}"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Původní částka:</strong></td>
+                        <td th:text="${@numberUtil.formatCurrency(event.originalClaimAmount)}"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Zbývá k vyplacení:</strong></td>
+                        <td th:text="${@numberUtil.formatCurrency(event.getRemainingClaimAmount())}"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Status:</strong></td>
+                        <td th:text="${event.eventStatus.getFormattedEventStatus()}"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Pojištění:</strong></td>
+                        <td>
+                            <a th:href="@{'/policy/' + ${policy.policyId} + '/detail'}">
+                                <span th:text="${@stringUtil.formatPolicyTypeWithId(policy)}"></span>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${not sameUser}">
+                        <td><strong>Pojistník:</strong></td>
+                        <td th:text="${@stringUtil.formatFullName(policy.policyHolder)}">
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <a sec:authorize="hasRole('ROLE_ADMIN')"
+           class="btn btn-warning" th:href="@{'/event/' + ${event.eventId} + '/edit'}">Editovat událost</a>
+        <a sec:authorize="hasRole('ROLE_ADMIN')"
+           class="btn btn-danger" th:href="@{'/event/' + ${event.eventId} + '/delete'}">Odstranit událost</a>
+    </section>
+</article>
+<footer th:replace="~{fragments/layout.html :: footer}"></footer>
+</body>
+</html>

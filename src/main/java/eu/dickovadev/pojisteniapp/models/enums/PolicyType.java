@@ -1,32 +1,32 @@
 package eu.dickovadev.pojisteniapp.models.enums;
 
 public enum PolicyType {
-    ZIVOTNI_POJISTENI,
-    URAZOVE_POJISTENI,
-    CESTOVNI_POJISTENI,
-    POVINNE_RUCENI,
-    HAVARIJNI_POJISTENI,
-    POJISTENI_MAJETKU,
-    POJISTENI_ODPOVEDNOSTI,
-    POJISTENI_MAZLICKA;
+    LIFE_INSURANCE,
+    ACCIDENT_INSURANCE,
+    TRAVEL_INSURANCE,
+    VEHICLE_INSURANCE,
+    COLLISION_INSURANCE,
+    PROPERTY_INSURANCE,
+    LIABILITY_INSURANCE,
+    PET_INSURANCE;
 
-    public String getFormattedPolicyType(){
-        switch (this){
-            case ZIVOTNI_POJISTENI:
+    public String getFormattedPolicyType() {
+        switch (this) {
+            case LIFE_INSURANCE:
                 return "Životní pojištění";
-            case URAZOVE_POJISTENI:
+            case ACCIDENT_INSURANCE:
                 return "Úrazové pojištění";
-            case CESTOVNI_POJISTENI:
+            case TRAVEL_INSURANCE:
                 return "Cestovní pojištění";
-            case POVINNE_RUCENI:
+            case VEHICLE_INSURANCE:
                 return "Povinné ručení";
-            case HAVARIJNI_POJISTENI:
+            case COLLISION_INSURANCE:
                 return "Havarijní pojištění";
-            case POJISTENI_MAJETKU:
+            case PROPERTY_INSURANCE:
                 return "Pojištění majetku";
-            case POJISTENI_ODPOVEDNOSTI:
+            case LIABILITY_INSURANCE:
                 return "Pojištění odpovědnosti";
-            case POJISTENI_MAZLICKA:
+            case PET_INSURANCE:
                 return "Pojištění mazlíčka";
             default:
                 return "Neznámý typ pojištění";

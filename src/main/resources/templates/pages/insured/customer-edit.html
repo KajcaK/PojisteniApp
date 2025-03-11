@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="cs-cz" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout.html :: head}">
+    <title th:text="${pageTitle}">Upravit osobu</title>
+</head>
+<body class="custom-body">
+<header th:replace="~{fragments/layout.html :: header}"></header>
+
+<div th:replace="~{fragments/layout.html :: flash-messages}"></div>
+
+<article class="container">
+    <header>
+        <h1>Upravit</h1>
+    </header>
+
+    <section class="d-flex justify-content-center">
+        <div class="form-container">
+            <form class="d-flex flex-column gap-3"
+                  method="post"
+                  th:action="@{/insured/{userId}/customer-edit(userId=${userDTO.userId})}"
+                  th:object="${userDTO}">
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="first-name">Jméno</label>
+                            <input id="first-name" class="form-control" type="text" th:field="*{firstName}"/>
+                            <small class="text-danger" th:errors="*{firstName}"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="last-name">Příjmení</label>
+                            <input id="last-name" class="form-control" type="text" th:field="*{lastName}"/>
+                            <small class="text-danger" th:errors="*{lastName}"></small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input id="email" class="form-control" type="email" th:field="*{email}"/>
+                            <small class="text-danger" th:errors="*{email}"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="phone">Telefon</label>
+                            <input id="phone" class="form-control" type="tel" th:field="*{phone}"/>
+                            <small class="text-danger" th:errors="*{phone}"></small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="street">Ulice a číslo popisné</label>
+                            <input id="street" class="form-control" type="text" th:field="*{street}"/>
+                            <small class="text-danger" th:errors="*{street}"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="city">Město</label>
+                            <input id="city" class="form-control" type="text" th:field="*{city}"/>
+                            <small class="text-danger" th:errors="*{city}"></small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="zipcode">PSČ</label>
+                        <input id="zipcode" class="form-control" type="text" th:field="*{zipCode}"/>
+                        <small class="text-danger" th:errors="*{zipCode}"></small>
+                    </div>
+                </div>
+
+                <div class="form-group text-center mt-3">
+                    <button type="submit" class="btn btn-dark px-4">Uložit</button>
+                </div>
+            </form>
+
+            <div class="text-center mt-3">
+                <a class="btn btn-outline-dark" th:href="@{'/insured/' + ${userId} + '/detail'}">Zpět na profil</a>
+            </div>
+        </div>
+    </section>
+</article>
+<footer th:replace="~{fragments/layout.html :: footer}"></footer>
+</body>
+</html>
