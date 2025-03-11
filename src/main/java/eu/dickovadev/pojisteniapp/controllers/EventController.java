@@ -158,8 +158,7 @@ public class EventController {
     @GetMapping("/{eventId}/delete")
     public String deleteEvent(
             @PathVariable long eventId,
-            RedirectAttributes redirectAttributes,
-            HttpServletRequest request
+            RedirectAttributes redirectAttributes
     ) {
         // Call service and get policyId
         long policyId = eventService.remove(eventId);

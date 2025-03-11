@@ -106,7 +106,7 @@ public class AdminServiceImpl implements AdminService {
         userRepository.save(fetchedUser);
 
         auditLogService.logAction(
-                "Update",
+                "UPDATE",
                 "UserEntity",
                 userId,
                 "User with ID " + userId + " assigned ADMIN role."
@@ -126,7 +126,7 @@ public class AdminServiceImpl implements AdminService {
 
         // Log the action
         auditLogService.logAction(
-                "Update",
+                "UPDATE",
                 "UserEntity",
                 userId,
                 "User with ID " + userId + " removed ADMIN role."

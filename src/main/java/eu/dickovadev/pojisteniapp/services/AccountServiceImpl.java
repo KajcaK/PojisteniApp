@@ -32,7 +32,7 @@ public class AccountServiceImpl implements AccountService {
             PasswordEncoder passwordEncoder,
             AuditLogService auditLogService,
             UserService userService
-    ) {
+    ){
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.auditLogService = auditLogService;
@@ -41,9 +41,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public void create(AccountDTO user) {
+    public void create(AccountDTO user){
 
-        validatePasswordMatch(user.getPassword(), user.getConfirmedPassword());
+        validatePasswordMatch(user.getPassword(), user.getConfirmPassword());
 
         UserEntity userEntity = new UserEntity();
 
@@ -68,7 +68,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Transactional
     @Override
-    public void changePassword(Long userId, String currentPassword, String newPassword, String confirmedPassword) {
+    public void changePassword(Long userId, String currentPassword, String newPassword, String confirmPassword) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserEntity authenticatedUser = (UserEntity) authentication.getPrincipal();
@@ -77,7 +77,7 @@ public class AccountServiceImpl implements AccountService {
         }
 
         // Validate new passwords match
-        validatePasswordMatch(newPassword, confirmedPassword);
+        validatePasswordMatch(newPassword, confirmPassword);
 
         // Retrieve user entity from database
         UserEntity userEntity = userService.getEntityByIdOrThrow(userId);

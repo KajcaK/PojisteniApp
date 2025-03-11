@@ -1,6 +1,5 @@
 package eu.dickovadev.pojisteniapp.entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import eu.dickovadev.pojisteniapp.models.enums.EventStatus;
 import eu.dickovadev.pojisteniapp.models.enums.EventType;

@@ -142,8 +142,7 @@ public class InsuredController {
     @GetMapping("/{userId}/delete")
     public String deleteInsured(
             @PathVariable long userId,
-            RedirectAttributes redirectAttributes,
-            HttpServletRequest request
+            RedirectAttributes redirectAttributes
     ) {
         userService.remove(userId);
 

@@ -1,16 +1,11 @@
 package eu.dickovadev.pojisteniapp.controllers;
 
-import eu.dickovadev.pojisteniapp.entities.UserEntity;
 import eu.dickovadev.pojisteniapp.models.dto.PolicyDTO;
-import eu.dickovadev.pojisteniapp.models.enums.PolicyType;
-import eu.dickovadev.pojisteniapp.models.exceptions.AccessDeniedException;
 import eu.dickovadev.pojisteniapp.models.responses.PolicyCreateResponse;
 import eu.dickovadev.pojisteniapp.models.responses.PolicyDetailResponse;
 import eu.dickovadev.pojisteniapp.models.responses.PolicyEditResponse;
 import eu.dickovadev.pojisteniapp.models.responses.PolicyIndexResponse;
 import eu.dickovadev.pojisteniapp.services.PolicyService;
-import eu.dickovadev.pojisteniapp.services.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
