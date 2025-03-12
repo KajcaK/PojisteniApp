@@ -37,6 +37,8 @@ public class InsuredController {
         // Define the page size
         int pageSize = 8;
 
+        if (query != null) query = query.trim().toLowerCase();
+
         UserIndexResponse response = userService.getPaginatedUsers(query, searchField, page, pageSize);
 
         // Add attributes to the model

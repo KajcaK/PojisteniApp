@@ -28,7 +28,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -279,7 +278,7 @@ public class PolicyServiceImpl implements PolicyService {
     private void assignRoles(UserEntity policyHolder, UserEntity insuredUser) {
         boolean samePerson = policyHolder.getUserId() == insuredUser.getUserId();
 
-        // Ensure the insured user has POJISTNIK role
+        // Ensure the insured user has INSURED role
         insuredUser.getRoles().add(Role.ROLE_INSURED);
 
         // Ensure the policyholder has POLICYHOLDER role only if they are different

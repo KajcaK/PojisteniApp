@@ -41,6 +41,8 @@ public class PolicyController {
         // Define the page size
         int pageSize = 8;
 
+        if (query != null) query = query.trim().toLowerCase();
+
         PolicyIndexResponse response = policyService.getPaginatedPolicies(query, searchField, page, pageSize);
 
         model.addAttribute("policyList", response.getPaginatedList());

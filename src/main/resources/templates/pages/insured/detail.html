@@ -38,8 +38,8 @@
                 </div>
             </div>
             <!-- User Roles Section -->
-            <div class="col-md-3 content-wrapper">
-                <ul class="no-decoration">
+            <div class="col-md-3 role-wrapper mb-3">
+                <ul class="p-0">
                     <li th:each="role : ${user.roles}">
                         <span class="badge bg-dark fs-6 mt-2" th:text="${role.getFormattedRole()}"></span>
                     </li>

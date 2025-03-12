@@ -6,35 +6,66 @@
 <body class="admin-body">
 <header th:replace="~{fragments/layout.html :: header}"></header>
 
-<article class="container-fluid m-0 w-100 admin-article ps-0">
+<article class="container-fluid m-0 w-100 admin-article px-0">
     <section class="mt-0 w-100 admin-section">
         <div class="row m-0 w-100">
-            <!-- Side Navigation -->
-            <div class="col-md-2 bg-dark sidebar d-flex flex-column">
-                <div class="list-group">
-                    <button type="button" class="list-group-item list-group-item-action my-1 btn-dark-outline"
-                            id="logsButton">
+            <!-- Offcanvas Button (small screens) -->
+            <button class="btn btn-dark d-md-none p-2" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#offcanvasSidebar" aria-controls="offcanvasSidebar">
+                <i class="bi bi-list"></i> Admin Menu
+            </button>
+
+            <!-- Regular Sidebar (medium and larger screens) -->
+            <div class="col-md-2 d-none d-md-block">
+                <div class="list-group mt-3">
+                    <button type="button" class="list-group-item list-group-item-dark my-1" id="logsButton">
                         Historie změn
                     </button>
-                    <button type="button" class="list-group-item list-group-item-action my-1 btn-dark-outline"
-                            id="nullUsersButton">
-                        Nevyplnění uživatelé
+                    <button type="button" class="list-group-item list-group-item-dark my-1" id="nullUsersButton">
+                        Nevyplněné účty
                     </button>
-                    <button type="button" class="list-group-item list-group-item-action my-1 btn-dark-outline"
-                            id="adminUsersButton">
+                    <button type="button" class="list-group-item list-group-item-dark my-1" id="adminUsersButton">
                         Admin účty
                     </button>
-                    <button type="button" class="list-group-item list-group-item-action my-1 btn-dark-outline"
-                            id="statsButton ">
+                    <button type="button" class="list-group-item list-group-item-dark my-1">
                         <a class="nav-link mx-1" th:href="@{/admin/statistics}"
                            aria-label="Admin Section">Statistiky</a>
                     </button>
                 </div>
             </div>
 
+            <!-- Offcanvas Sidebar (small screens) -->
+            <div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="offcanvasSidebar"
+                 aria-labelledby="offcanvasSidebarLabel" data-bs-backdrop="false">
+                <div class="offcanvas-header">
+                    <h5 id="offcanvasSidebarLabel">Navigace</h5>
+                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                            aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <div class="list-group">
+                        <button type="button" class="list-group-item list-group-item-dark my-1"
+                                id="logsButtonOffcanvas">
+                            Historie změn
+                        </button>
+                        <button type="button" class="list-group-item list-group-item-dark my-1"
+                                id="nullUsersButtonOffcanvas">
+                            Nevyplnění uživatelé
+                        </button>
+                        <button type="button" class="list-group-item list-group-item-dark my-1"
+                                id="adminUsersButtonOffcanvas">
+                            Admin účty
+                        </button>
+                        <button type="button" class="list-group-item list-group-item-dark my-1">
+                            <a class="nav-link mx-1" th:href="@{/admin/statistics}" aria-label="Admin Section">Statistiky</a>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Main Content Area -->
-            <div class="col-md-10 mb-5">
-                <div class="container m-3 content-wrapper ">
+            <div class="col-md-10">
+                <div class="container m-3 content-wrapper">
                     <div id="contentArea">
                         <!-- Content will be loaded dynamically here -->
                     </div>
@@ -68,6 +99,24 @@
     $('#adminUsersButton').on('click', function() {
         currentBaseUrl = '/admin/admin-users';
         $('#contentArea').load(currentBaseUrl);
+    });
+
+    $('#logsButtonOffcanvas').on('click', function() {
+        currentBaseUrl = '/admin/audit-logs';
+        $('#contentArea').load(currentBaseUrl);
+        $('#offcanvasSidebar').offcanvas('hide');
+    });
+
+    $('#nullUsersButtonOffcanvas').on('click', function() {
+        currentBaseUrl = '/admin/null-users';
+        $('#contentArea').load(currentBaseUrl);
+        $('#offcanvasSidebar').offcanvas('hide');
+    });
+
+    $('#adminUsersButtonOffcanvas').on('click', function() {
+        currentBaseUrl = '/admin/admin-users';
+        $('#contentArea').load(currentBaseUrl);
+        $('#offcanvasSidebar').offcanvas('hide');
     });
 
     // Pagination Click Handling
