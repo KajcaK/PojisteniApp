@@ -9,22 +9,29 @@ import java.util.Locale;
 @Component
 public class NumberUtil {
 
-    public static String formatNumberDays(double num) {
+    public String formatNumberDays(double num) {
         DecimalFormat df = new DecimalFormat("#,##0.0", getCzechFormatSymbols());
         String formattedNum = df.format(num);
 
-        String suffix = (num == 1) ? " den" : " dní";
+        String suffix;
+        if (num == 1) {
+            suffix = " den";
+        } else if (num >= 2 && num <= 4) {
+            suffix = " dny";
+        } else {
+            suffix = " dní";
+        }
 
         return formattedNum + suffix;
     }
 
-    public static String formatCurrency(double num) {
+    public String formatCurrency(double num) {
         DecimalFormat df = new DecimalFormat("#,##0", getCzechFormatSymbols());
         return df.format(num) + " Kč";
     }
 
-    private static DecimalFormatSymbols getCzechFormatSymbols() {
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.getDefault());
+    private DecimalFormatSymbols getCzechFormatSymbols() {
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.forLanguageTag("cs-CZ"));
         symbols.setGroupingSeparator(' ');
         return symbols;
     }

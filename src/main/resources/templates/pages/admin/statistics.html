@@ -160,7 +160,7 @@
                                 <span th:text="${@numberUtil.formatCurrency(statistics.eventStats.totalAmountPaid)}"></span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <strong><i class="bi bi-file-bar-graph me-2"></i>Průměrná hodnota:</strong>
+                                <strong><i class="bi bi-file-bar-graph me-2"></i>Průměrná výše krytí:</strong>
                                 <span th:text="${@numberUtil.formatCurrency(statistics.avgStats.averageEventClaimAmount)}"></span>
                             </li>
                         </ul>
@@ -169,7 +169,7 @@
                 <!-- Coverage Chart -->
                 <div class="col-12 col-md-4 col-lg-4">
                     <div class="chart-card">
-                        <div class="chart-title"><i class="bi bi-coin me-2"></i>Výše krytí</div>
+                        <div class="chart-title"><i class="bi bi-coin me-2"></i>Průměr výše pojistek</div>
                         <div id="coverageChart"></div>
                     </div>
                 </div>

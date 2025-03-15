@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 @Component
 public class DateUtil {
 
-    public static String formatToDdMmYyyy(LocalDate date) {
+    public String formatToDdMmYyyy(LocalDate date) {
         if (date != null) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             return date.format(formatter);
