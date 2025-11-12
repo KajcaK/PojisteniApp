@@ -1,23 +1,30 @@
 package eu.dickovadev.pojisteniapp.models.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import eu.dickovadev.pojisteniapp.models.enums.PolicyType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.util.Set;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PolicyDTO {
     private long policyId;
 
+    @NotNull(message = "Vyberte typ pojištění")
     private PolicyType type;
 
     @NotNull(message = "Vyplňte částku")
+    @PositiveOrZero(message = "Částka musí být nezáporná")
     private long coverageAmount;
 
     @NotBlank(message = "Vyplňte předmět pojištění")
+    @Size(max = 255, message = "Předmět je příliš dlouhý")
     private String subject;
 
     @NotNull(message = "Vyberte datum")
@@ -35,14 +42,12 @@ public class PolicyDTO {
 
     private boolean sameUser;
 
-    @JsonManagedReference
     private Set<EventDTO> events;
 
     //region: getters and setters
     public long getPolicyId() {
         return policyId;
     }
-
     public void setPolicyId(long policyId) {
         this.policyId = policyId;
     }
@@ -50,7 +55,6 @@ public class PolicyDTO {
     public PolicyType getType() {
         return type;
     }
-
     public void setType(PolicyType type) {
         this.type = type;
     }
@@ -58,7 +62,6 @@ public class PolicyDTO {
     public long getCoverageAmount() {
         return coverageAmount;
     }
-
     public void setCoverageAmount(long coverageAmount) {
         this.coverageAmount = coverageAmount;
     }
@@ -66,7 +69,6 @@ public class PolicyDTO {
     public String getSubject() {
         return subject;
     }
-
     public void setSubject(String subject) {
         this.subject = subject;
     }
@@ -74,7 +76,6 @@ public class PolicyDTO {
     public LocalDate getStartDate() {
         return startDate;
     }
-
     public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
@@ -82,7 +83,6 @@ public class PolicyDTO {
     public LocalDate getEndDate() {
         return endDate;
     }
-
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
@@ -90,7 +90,6 @@ public class PolicyDTO {
     public PolicyUserDTO getPolicyHolder() {
         return policyHolder;
     }
-
     public void setPolicyHolder(PolicyUserDTO policyHolder) {
         this.policyHolder = policyHolder;
     }
@@ -98,7 +97,6 @@ public class PolicyDTO {
     public PolicyUserDTO getInsuredUser() {
         return insuredUser;
     }
-
     public void setInsuredUser(PolicyUserDTO insuredUser) {
         this.insuredUser = insuredUser;
     }
@@ -106,7 +104,6 @@ public class PolicyDTO {
     public Set<EventDTO> getEvents() {
         return events;
     }
-
     public void setEvents(Set<EventDTO> events) {
         this.events = events;
     }
@@ -114,7 +111,6 @@ public class PolicyDTO {
     public boolean isSameUser() {
         return sameUser;
     }
-
     public void setSameUser(boolean sameUser) {
         this.sameUser = sameUser;
     }
@@ -125,8 +121,8 @@ public class PolicyDTO {
         return "PolicyDTO{" +
                 "policyId=" + policyId +
                 ", policyType=" + type +
-                ", policyHolder=" + policyHolder.getUserId() + " " + policyHolder.getEmail() +
-                ", insuredUser=" + insuredUser.getUserId() + " " + insuredUser.getEmail() +
+                ", policyHolder=" + (policyHolder != null ? policyHolder.getUserId() : null) +
+                ", insuredUser=" + (insuredUser != null ? insuredUser.getUserId() : null) +
                 '}';
     }
 }

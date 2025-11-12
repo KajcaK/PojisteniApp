@@ -1,29 +1,34 @@
 package eu.dickovadev.pojisteniapp.models.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import eu.dickovadev.pojisteniapp.models.enums.EventStatus;
 import eu.dickovadev.pojisteniapp.models.enums.EventType;
 import eu.dickovadev.pojisteniapp.models.enums.PolicyType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class EventDTO {
-
     private long eventId;
 
     @NotNull(message = "Vyberte datum")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate eventDate;
 
+    @NotNull(message = "Vyberte typ události")
     private EventType eventType;
 
     @NotBlank(message = "Vyplňte popis pojistné události.")
     private String eventDescription;
 
+    @NotNull(message = "Vyberte stav události")
     private EventStatus eventStatus;
 
+    @NotNull(message = "Chybí policyId")
     private long policyId;
 
     private PolicyType policyType;
@@ -32,20 +37,20 @@ public class EventDTO {
 
     private long insuredUserId;
 
+    @PositiveOrZero(message = "Původní nárok musí být nezáporný")
     private long originalClaimAmount;
 
+    @PositiveOrZero(message = "Vyplacená částka musí být nezáporná")
     private long amountPaid;
 
     public long getRemainingClaimAmount() {
         return originalClaimAmount - amountPaid;
     }
 
-
     //region: getters and setters
     public long getEventId() {
         return eventId;
     }
-
     public void setEventId(long eventId) {
         this.eventId = eventId;
     }
@@ -53,7 +58,6 @@ public class EventDTO {
     public LocalDate getEventDate() {
         return eventDate;
     }
-
     public void setEventDate(LocalDate eventDate) {
         this.eventDate = eventDate;
     }
@@ -61,7 +65,6 @@ public class EventDTO {
     public EventType getEventType() {
         return eventType;
     }
-
     public void setEventType(EventType eventType) {
         this.eventType = eventType;
     }
@@ -69,7 +72,6 @@ public class EventDTO {
     public String getEventDescription() {
         return eventDescription;
     }
-
     public void setEventDescription(String eventDescription) {
         this.eventDescription = eventDescription;
     }
@@ -77,7 +79,6 @@ public class EventDTO {
     public EventStatus getEventStatus() {
         return eventStatus;
     }
-
     public void setEventStatus(EventStatus eventStatus) {
         this.eventStatus = eventStatus;
     }
@@ -85,7 +86,6 @@ public class EventDTO {
     public long getAmountPaid() {
         return amountPaid;
     }
-
     public void setAmountPaid(long amountPaid) {
         this.amountPaid = amountPaid;
     }
@@ -93,7 +93,6 @@ public class EventDTO {
     public long getPolicyId() {
         return policyId;
     }
-
     public void setPolicyId(long policyId) {
         this.policyId = policyId;
     }
@@ -101,7 +100,6 @@ public class EventDTO {
     public PolicyType getPolicyType() {
         return policyType;
     }
-
     public void setPolicyType(PolicyType policyType) {
         this.policyType = policyType;
     }
@@ -109,7 +107,6 @@ public class EventDTO {
     public long getPolicyHolderId() {
         return policyHolderId;
     }
-
     public void setPolicyHolderId(long policyHolderId) {
         this.policyHolderId = policyHolderId;
     }
@@ -117,7 +114,6 @@ public class EventDTO {
     public long getInsuredUserId() {
         return insuredUserId;
     }
-
     public void setInsuredUserId(long insuredUserId) {
         this.insuredUserId = insuredUserId;
     }
@@ -125,11 +121,9 @@ public class EventDTO {
     public long getOriginalClaimAmount() {
         return originalClaimAmount;
     }
-
     public void setOriginalClaimAmount(long originalClaimAmount) {
         this.originalClaimAmount = originalClaimAmount;
     }
-
     //endregion
 
     @Override

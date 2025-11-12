@@ -1,5 +1,6 @@
 package eu.dickovadev.pojisteniapp.models.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import eu.dickovadev.pojisteniapp.models.enums.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,6 +10,7 @@ import jakarta.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserDTO {
     private long userId;
 
@@ -49,7 +51,6 @@ public class UserDTO {
     public String getFirstName() {
         return firstName;
     }
-
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
@@ -57,7 +58,6 @@ public class UserDTO {
     public String getLastName() {
         return lastName;
     }
-
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
@@ -65,7 +65,6 @@ public class UserDTO {
     public String getEmail() {
         return email;
     }
-
     public void setEmail(String email) {
         this.email = email;
     }
@@ -73,7 +72,6 @@ public class UserDTO {
     public String getPhone() {
         return phone;
     }
-
     public void setPhone(String phone) {
         this.phone = phone;
     }
@@ -81,7 +79,6 @@ public class UserDTO {
     public String getStreet() {
         return street;
     }
-
     public void setStreet(String street) {
         this.street = street;
     }
@@ -89,7 +86,6 @@ public class UserDTO {
     public String getCity() {
         return city;
     }
-
     public void setCity(String city) {
         this.city = city;
     }
@@ -97,7 +93,6 @@ public class UserDTO {
     public String getZipCode() {
         return zipCode;
     }
-
     public void setZipCode(String zipCode) {
         this.zipCode = zipCode;
     }
@@ -105,7 +100,6 @@ public class UserDTO {
     public long getUserId() {
         return userId;
     }
-
     public void setUserId(long userId) {
         this.userId = userId;
     }
@@ -113,7 +107,6 @@ public class UserDTO {
     public Set<Role> getRoles() {
         return roles;
     }
-
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
@@ -121,7 +114,6 @@ public class UserDTO {
     public Set<PolicyDTO> getPolicies() {
         return policies;
     }
-
     public void setPolicies(Set<PolicyDTO> policies) {
         this.policies = policies;
     }

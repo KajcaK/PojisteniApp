@@ -9,6 +9,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
 @EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
 public class ApplicationSecurityConfiguration {
@@ -29,50 +31,54 @@ public class ApplicationSecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests(authorizeHttpRequests ->
-                        authorizeHttpRequests
-                                // Public pages:
-                                .requestMatchers(
-                                        "/account/login",
-                                        "/account/logout",
-                                        "/account/register",
-                                        "/account/change-password",
-                                        "/access-denied",
-                                        "/error",
-                                        "/404",
-                                        "/",
-                                        "/about",
-                                        "/event-info",
-                                        "/policy-info"
-                                ).permitAll()
-                                .requestMatchers(
-                                        "/static/**",
-                                        "/icons/**",
-                                        "/css/**",
-                                        "/js/**",
-                                        "/images/**"
-                                ).permitAll()
-                                // All other requests require authentication
-                                .anyRequest().authenticated()
+                .cors(withDefaults())
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/account/login",
+                                "/account/logout",
+                                "/account/register",
+                                "/account/change-password",
+                                "/access-denied",
+                                "/error",
+                                "/404",
+                                "/",
+                                "/about",
+                                "/event-info",
+                                "/policy-info",
+                                "/static/**",
+                                "/icons/**",
+                                "/css/**",
+                                "/js/**",
+                                "/images/**"
+                        ).permitAll()
+                        .anyRequest().authenticated()
                 )
-                .formLogin(formLogin ->
-                        formLogin
-                                .loginPage("/account/login")
-                                .loginProcessingUrl("/account/login")
-                                .defaultSuccessUrl("/", true)
-                                .usernameParameter("email")
-                                .successHandler(customAuthenticationSuccessHandler)
-                                .failureHandler(customAuthenticationFailureHandler)
-                                .permitAll() // Allow public access to login
+                .formLogin(form -> form
+                        .loginPage("/account/login")
+                        .loginProcessingUrl("/account/login")
+                        .defaultSuccessUrl("/", true)
+                        .usernameParameter("email")
+                        .successHandler(customAuthenticationSuccessHandler)
+                        .failureHandler(customAuthenticationFailureHandler)
+                        .permitAll()
                 )
-                .exceptionHandling(exceptionHandling ->
-                        exceptionHandling.accessDeniedPage("/access-denied")
-                )
-                .logout(logout ->
-                        logout.logoutUrl("/account/logout")
-                );
+                .exceptionHandling(ex -> ex.accessDeniedPage("/access-denied"))
+                .logout(logout -> logout.logoutUrl("/account/logout"));
 
         return http.build();
+    }
+
+    @Bean
+    public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
+        var config = new org.springframework.web.cors.CorsConfiguration();
+        config.setAllowedOrigins(java.util.List.of("http://localhost:5173","http://127.0.0.1:5173"));
+        config.setAllowCredentials(true);
+        config.setAllowedMethods(java.util.List.of("GET","POST","PUT","DELETE","PATCH","OPTIONS","HEAD"));
+        config.setAllowedHeaders(java.util.List.of("*"));
+        var source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 
 

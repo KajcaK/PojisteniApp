@@ -10,10 +10,10 @@
 
     <properties>
         <!-- Use Boot's BOM to manage versions -->
-        <spring.boot.version>3.3.5</spring.boot.version>
+        <spring.boot.version>3.3.13</spring.boot.version>
 
         <!-- Java toolchain -->
-        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Lib versions not managed by Boot -->
@@ -90,6 +90,21 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Flyway + Actuator -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+            <version>10.10.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -98,6 +113,14 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring.boot.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>

@@ -1,5 +1,6 @@
 package eu.dickovadev.pojisteniapp.controllers;
 
+import eu.dickovadev.pojisteniapp.models.exceptions.UserNotFoundException;
 import eu.dickovadev.pojisteniapp.models.responses.AdminUsersResponse;
 import eu.dickovadev.pojisteniapp.models.responses.AuditLogResponse;
 import eu.dickovadev.pojisteniapp.models.responses.NullUsersResponse;
@@ -7,16 +8,30 @@ import eu.dickovadev.pojisteniapp.models.responses.StatisticsResponse;
 import eu.dickovadev.pojisteniapp.services.AdminService;
 import eu.dickovadev.pojisteniapp.services.StatisticsService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
+
+    private static final Logger log = LoggerFactory.getLogger(AdminController.class);
+
+    private static final String VIEW_ADMIN_INDEX            = "pages/admin/index";
+    private static final String FRAG_AUDIT_LOGS             = "fragments/admin-fragments :: auditLogsContent";
+    private static final String FRAG_INCOMPLETE_USERS       = "fragments/admin-fragments :: nullUsersContent";
+    private static final String FRAG_ADMIN_USERS            = "fragments/admin-fragments :: adminUsersContent";
+    private static final String FRAG_STATISTICS             = "fragments/admin-fragments :: statisticsContent";
+
+    private static final String REDIRECT_ADMIN_ROOT         = "redirect:/admin";
+    private static final int    DEFAULT_PAGE_SIZE           = 10;
 
     private final AdminService adminService;
     private final StatisticsService statisticsService;
@@ -27,14 +42,20 @@ public class AdminController {
         this.statisticsService = statisticsService;
     }
 
+    /* Small helper to redirect to /admin */
+    private String safeRedirectBack(HttpServletRequest request) {
+        String ref = request.getHeader("Referer");
+        if (ref == null || !ref.contains("/admin")) return REDIRECT_ADMIN_ROOT;
+        return "redirect:" + ref;
+    }
+
     @Secured("ROLE_ADMIN")
     @GetMapping
     public String renderIndex(Model model) {
-
+        log.info("Admin index requested");
         model.addAttribute("pageTitle", "Admin Sekce");
         model.addAttribute("useJQuery", true);
-
-        return "pages/admin/index";
+        return VIEW_ADMIN_INDEX;
     }
 
     @Secured("ROLE_ADMIN")
@@ -43,16 +64,16 @@ public class AdminController {
             Model model,
             @RequestParam(defaultValue = "1") int page
     ) {
-        int pageSize = 10;
+        log.info("GET /admin/null-users page={} size={}", page, DEFAULT_PAGE_SIZE);
+        NullUsersResponse resp = adminService.getPaginatedNullUsers(page, DEFAULT_PAGE_SIZE);
 
-        NullUsersResponse response = adminService.getPaginatedNullUsers(page, pageSize);
-
-        model.addAttribute("nullUsersList", response.getNullUsersList());
+        model.addAttribute("nullUsersList", resp.getNullUsersList());
         model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", response.getPaginationMetadata().get("totalPages"));
+        model.addAttribute("totalPages", resp.getPaginationMetadata().get("totalPages"));
 
-        return "fragments/admin-fragments.html :: nullUsersContent";
+        return FRAG_INCOMPLETE_USERS;
     }
+
 
     @Secured("ROLE_ADMIN")
     @GetMapping("/admin-users")
@@ -60,17 +81,16 @@ public class AdminController {
             Model model,
             @RequestParam(defaultValue = "1") int page
     ) {
+        log.info("GET /admin/admin-users page={} size={}", page, DEFAULT_PAGE_SIZE);
+        AdminUsersResponse resp = adminService.getPaginatedAdminUsers(page, DEFAULT_PAGE_SIZE);
 
-        int pageSize = 10;
-
-        AdminUsersResponse response = adminService.getPaginatedAdminUsers(page, pageSize);
-
-        model.addAttribute("adminList", response.getAdminUsersList());
+        model.addAttribute("adminList", resp.getAdminUsersList());
         model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", response.getPaginationMetadata().get("totalPages"));
+        model.addAttribute("totalPages", resp.getPaginationMetadata().get("totalPages"));
 
-        return "fragments/admin-fragments.html :: adminUsersContent";
+        return FRAG_ADMIN_USERS;
     }
+
 
     @Secured("ROLE_ADMIN")
     @GetMapping("/audit-logs")
@@ -78,80 +98,76 @@ public class AdminController {
             Model model,
             @RequestParam(defaultValue = "1") int page
     ) {
+        log.info("GET /admin/audit-logs page={} size={}", page, DEFAULT_PAGE_SIZE);
+        AuditLogResponse resp = adminService.getAuditLogs(page, DEFAULT_PAGE_SIZE);
 
-        int pageSize = 10;
-
-        AuditLogResponse response = adminService.getAuditLogs(page, pageSize);
-
-        model.addAttribute("logList", response.getAuditLogDTOList());
+        model.addAttribute("logList", resp.getAuditLogDTOList());
         model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", response.getPaginationMetadata().get("totalPages"));
+        model.addAttribute("totalPages", resp.getPaginationMetadata().get("totalPages"));
 
-        return "fragments/admin-fragments.html :: auditLogsContent";
+        log.debug("audit log count={}", resp.getAuditLogDTOList().size());
+        return FRAG_AUDIT_LOGS;
     }
+
 
     @Secured("ROLE_ADMIN")
     @GetMapping("/statistics")
-    public String renderStatistics(
-            Model model
-    ) {
-        StatisticsResponse statisticsResponse = statisticsService.getStatistics();
-
+    public String renderStatistics(Model model) {
+        log.info("GET /admin/statistics");
+        StatisticsResponse stats = statisticsService.getStatistics();
         model.addAttribute("pageTitle", "Statistiky");
-        model.addAttribute("statistics", statisticsResponse);
+        model.addAttribute("statistics", stats);
         model.addAttribute("useCharts", true);
-
-        return "pages/admin/statistics";
+        return FRAG_STATISTICS;
     }
 
     @Secured("ROLE_ADMIN")
     @GetMapping("/api/statistics")
     public ResponseEntity<StatisticsResponse> getStatisticsData() {
-        StatisticsResponse statisticsResponse = statisticsService.getStatistics();
-        return ResponseEntity.ok(statisticsResponse);  // This will return JSON response
+        log.info("GET /admin/api/statistics");
+        return ResponseEntity.ok(statisticsService.getStatistics());
     }
 
     @Secured("ROLE_ADMIN")
     @PostMapping("/{userId}/add-admin")
     public String addAdminRole(
             @PathVariable long userId,
-            Model model,
-            HttpServletRequest request
+            HttpServletRequest request,
+            RedirectAttributes flash
     ) {
-        String referer = request.getHeader("Referer");
-
+        log.info("POST grant ADMIN to userId={}", userId);
         try {
             adminService.setAdminRole(userId);
-            model.addAttribute("success", "Uživateli " + userId + " přidána role správce.");
-        } catch (Exception e) {
-            model.addAttribute("error", "Chyba při přidávání role uživateli " + userId);
+            flash.addFlashAttribute("success", "Uživateli " + userId + " přidána role správce.");
+        } catch (UserNotFoundException ex) {
+            log.warn("User not found for add-admin userId={}", userId, ex);
+            flash.addFlashAttribute("error", "Uživatel " + userId + " nenalezen.");
+        } catch (Exception ex) {
+            log.error("Unexpected error while adding ADMIN to userId={}", userId, ex);
+            flash.addFlashAttribute("error", "Nastala neočekávaná chyba při přidávání role.");
         }
-
-        if (referer != null) {
-            return "redirect:" + referer;
-        }
-        return "redirect:/admin";
+        return safeRedirectBack(request);
     }
+
 
     @Secured("ROLE_ADMIN")
     @DeleteMapping("/{userId}/remove-admin")
     public String removeAdminRole(
             @PathVariable long userId,
-            Model model,
-            HttpServletRequest request
+            HttpServletRequest request,
+            RedirectAttributes flash
     ) {
-        String referer = request.getHeader("Referer");
-
+        log.info("DELETE revoke ADMIN from userId={}", userId);
         try {
             adminService.removeAdminRole(userId);
-            model.addAttribute("success", "Uživateli " + userId + " odebrána role správce.");
-        } catch (Exception e) {
-            model.addAttribute("error", "Chyba při odebrání role uživateli " + userId);
+            flash.addFlashAttribute("success", "Uživateli " + userId + " odebrána role správce.");
+        } catch (UserNotFoundException ex) {
+            log.warn("User not found for remove-admin userId={}", userId, ex);
+            flash.addFlashAttribute("error", "Uživatel " + userId + " nenalezen.");
+        } catch (Exception ex) {
+            log.error("Unexpected error while removing ADMIN from userId={}", userId, ex);
+            flash.addFlashAttribute("error", "Nastala neočekávaná chyba při odebírání role.");
         }
-
-        if (referer != null) {
-            return "redirect:" + referer;
-        }
-        return "redirect:/admin";
+        return safeRedirectBack(request);
     }
 }

@@ -21,6 +21,8 @@ import eu.dickovadev.pojisteniapp.models.exceptions.EventNotFoundException;
 import eu.dickovadev.pojisteniapp.models.exceptions.PolicyNotFoundException;
 import eu.dickovadev.pojisteniapp.mappers.EventMapper;
 import eu.dickovadev.pojisteniapp.mappers.PolicyMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +35,8 @@ import java.util.Map;
 
 @Service
 public class EventServiceImpl implements EventService {
+
+    private static final Logger log = LoggerFactory.getLogger(EventServiceImpl.class);
 
     private final EventRepository eventRepository;
     private final PolicyService policyService;
@@ -66,7 +70,7 @@ public class EventServiceImpl implements EventService {
             EventDTO event,
             long policyId
     ) {
-
+        log.info("Creating event for policy {}", policyId);
         // Fetch policy entity by ID
         PolicyEntity policy = policyService.getEntityByIdOrThrow(policyId);
         event.setAmountPaid(0);
@@ -94,11 +98,11 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public void edit(EventDTO event, long eventId) {
-
         //Fetch the event entity
         EventEntity fetchedEvent = getEntityByIdOrThrow(eventId);
 
         if (event.getAmountPaid() > fetchedEvent.getOriginalClaimAmount()) {
+            log.warn("Amount paid {} exceeds original claim {} for event {}", event.getAmountPaid(), fetchedEvent.getOriginalClaimAmount(), eventId);
             throw new AmountPaidExceedException();
         }
 

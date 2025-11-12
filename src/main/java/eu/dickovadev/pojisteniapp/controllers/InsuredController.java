@@ -6,6 +6,8 @@ import eu.dickovadev.pojisteniapp.models.responses.UserIndexResponse;
 import eu.dickovadev.pojisteniapp.services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,7 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/insured")
 public class InsuredController {
 
-    private final UserService userService;
+    private static final Logger log = LoggerFactory.getLogger(InsuredController.class);
 
     private static final String VIEW_INDEX  = "pages/insured/index";
     private static final String VIEW_CREATE = "pages/insured/create";
@@ -28,6 +30,11 @@ public class InsuredController {
     private static final String VIEW_DETAIL = "pages/insured/detail";
     private static final String REDIRECT_ROOT = "redirect:/insured";
     public static final String REDIRECT_DETAIL = "redirect:/insured/%d/detail";
+
+    private static final int INDEX_PAGE_SIZE  = 8;
+    private static final int DETAIL_PAGE_SIZE = 4;
+
+    private final UserService userService;
 
     @Autowired
     public InsuredController(UserService userService) {
@@ -42,14 +49,12 @@ public class InsuredController {
             @RequestParam(name = "query", required = false) String query,
             @RequestParam(name = "searchField", required = false, defaultValue = "userId") String searchField
     ) {
-        // Define the page size
-        int pageSize = 8;
 
-        if (query != null) query = query.trim().toLowerCase();
+        String q = query == null ? null : query.trim().toLowerCase();
+        log.info("GET /insured index page={} size={} searchField={} query='{}'", page, INDEX_PAGE_SIZE, searchField, q);
 
-        UserIndexResponse response = userService.getPaginatedUsers(query, searchField, page, pageSize);
+        UserIndexResponse response = userService.getPaginatedUsers(q, searchField, page, INDEX_PAGE_SIZE);
 
-        // Add attributes to the model
         model.addAttribute("insuredList", response.getPaginatedList());
         model.addAttribute("currentPage", response.getPaginationMetadata().get("currentPage"));
         model.addAttribute("totalPages", response.getPaginationMetadata().get("totalPages"));
@@ -61,10 +66,8 @@ public class InsuredController {
 
     @Secured("ROLE_ADMIN")
     @GetMapping("/create")
-    public String renderCreateForm(
-            @ModelAttribute UserDTO user,
-            Model model
-    ) {
+    public String renderCreateForm(@ModelAttribute UserDTO user, Model model) {
+        log.info("GET /insured/create");
         model.addAttribute("pageTitle", "Vytvořit profil");
         return VIEW_CREATE;
     }
@@ -74,21 +77,20 @@ public class InsuredController {
     public String createInsured(
             @Valid @ModelAttribute UserDTO user,
             BindingResult result,
-            RedirectAttributes redirectAttributes,
+            RedirectAttributes flash,
             HttpServletRequest request,
             Model model
     ) {
-        if (result.hasErrors())
-            return renderCreateForm(user, model);
+        if (result.hasErrors()) {
+            log.debug("Validation errors on create: {}", result.getErrorCount());
+            return renderCreateForm(user, model); // stop on errors
+        }
 
         long userId = userService.create(user);
-
-        // Store userId in session after creation
         request.getSession().setAttribute("userId", userId);
 
-        redirectAttributes.addFlashAttribute("success", "Pojištěnec přidán.");
-        redirectAttributes.addAttribute("userId", userId);
-
+        log.info("Created insured userId={}", userId);
+        flash.addFlashAttribute("success", "Pojištěnec přidán.");
         return String.format(REDIRECT_DETAIL, userId);
     }
 
@@ -99,13 +101,10 @@ public class InsuredController {
             Model model,
             @RequestParam(defaultValue = "1") int page
     ) {
-        // Define the page size
-        int pageSize = 4;
+        log.info("GET /insured/{}/detail page={} size={}", userId, page, DETAIL_PAGE_SIZE);
 
-        // Call the service method, passing the logged-in user's ID
-        UserDetailResponse response = userService.getUserWithPaginatedPolicies(userId, page, pageSize);
+        UserDetailResponse response = userService.getUserWithPaginatedPolicies(userId, page, DETAIL_PAGE_SIZE);
 
-        // Add attributes to the model
         model.addAttribute("user", response.getUser());
         model.addAttribute("policies", response.getPaginatedPolicies());
         model.addAttribute("currentPage", response.getPaginationMetadata().get("currentPage"));
@@ -123,8 +122,8 @@ public class InsuredController {
             @ModelAttribute UserDTO user,
             Model model
     ) {
+        log.info("GET /insured/{}/edit", userId);
         userService.getUserEditData(userId, user);
-
         model.addAttribute("pageTitle", "Upravit osobu");
         return VIEW_EDIT;
     }
@@ -135,28 +134,29 @@ public class InsuredController {
             @PathVariable long userId,
             @Valid @ModelAttribute UserDTO user,
             BindingResult result,
-            RedirectAttributes redirectAttributes,
+            RedirectAttributes flash,
             Model model
     ) {
-        if (result.hasErrors())
-            return renderEditForm(userId, user, model);
+        if (result.hasErrors()) {
+            log.debug("Validation errors on admin edit userId={} errors={}", userId, result.getErrorCount());
+            return renderEditForm(userId, user, model); // stop on errors
+        }
 
         userService.editByAdmin(user, userId);
-
-        redirectAttributes.addFlashAttribute("success", "Změny uloženy.");
-
+        log.info("Admin edited insured userId={}", userId);
+        flash.addFlashAttribute("success", "Změny uloženy.");
         return String.format(REDIRECT_DETAIL, userId);
     }
 
     @Secured("ROLE_ADMIN")
-    @GetMapping("/{userId}/delete")
+    @PostMapping("/{userId}/delete")
     public String deleteInsured(
             @PathVariable long userId,
-            RedirectAttributes redirectAttributes
+            RedirectAttributes flash
     ) {
         userService.remove(userId);
-
-        redirectAttributes.addFlashAttribute("success", "Uživatel smazán.");
+        log.warn("Insured userId={} deleted by admin", userId);
+        flash.addFlashAttribute("success", "Uživatel smazán.");
         return REDIRECT_ROOT;
     }
 
@@ -167,8 +167,8 @@ public class InsuredController {
             @ModelAttribute UserDTO user,
             Model model
     ) {
+        log.info("GET /insured/{}/customer-edit", userId);
         userService.getUserEditData(userId, user);
-
         model.addAttribute("pageTitle", "Upravit osobu");
         return VIEW_CUSTOMER_EDIT;
     }
@@ -179,16 +179,17 @@ public class InsuredController {
             @PathVariable long userId,
             @Valid @ModelAttribute UserDTO user,
             BindingResult result,
-            RedirectAttributes redirectAttributes,
+            RedirectAttributes flash,
             Model model
     ) {
-        if (result.hasErrors())
-            return renderCustomerEditForm(userId, user, model);
+        if (result.hasErrors()) {
+            log.debug("Validation errors on customer edit userId={} errors={}", userId, result.getErrorCount());
+            return renderCustomerEditForm(userId, user, model); // stop on errors
+        }
 
         userService.editByCustomer(user, userId);
-
-        redirectAttributes.addFlashAttribute("success", "Změny uloženy.");
-
+        log.info("Customer edited self userId={}", userId);
+        flash.addFlashAttribute("success", "Změny uloženy.");
         return String.format(REDIRECT_DETAIL, userId);
     }
 }

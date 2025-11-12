@@ -13,6 +13,8 @@ import eu.dickovadev.pojisteniapp.models.responses.NullUsersResponse;
 import eu.dickovadev.pojisteniapp.models.responses.StatisticsResponse;
 import eu.dickovadev.pojisteniapp.repositories.AuditLogRepository;
 import eu.dickovadev.pojisteniapp.repositories.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +30,8 @@ import java.util.Map;
 @Service
 public class AdminServiceImpl implements AdminService {
 
+    private static final Logger log = LoggerFactory.getLogger(AdminServiceImpl.class);
+
     private final UserRepository userRepository;
     private final PaginationService paginationService;
     private final UserMapper userMapper;
@@ -42,7 +46,6 @@ public class AdminServiceImpl implements AdminService {
                             UserMapper userMapper,
                             UserService userService,
                             AuditLogService auditLogService,
-                            StatisticsService statisticsService,
                             AuditLogRepository auditLogRepository,
                             AuditLogMapper auditLogMapper) {
         this.userRepository = userRepository;
@@ -57,6 +60,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public NullUsersResponse getPaginatedNullUsers(int page, int pageSize) {
+        log.debug("Fetching paginated null users: page {}, pageSize {}", page, pageSize);
 
         Pageable pageable = paginationService.createPageable(page, pageSize);
 
@@ -71,6 +75,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public AdminUsersResponse getPaginatedAdminUsers(int page, int pageSize) {
+        log.debug("Fetching paginated admin users: page {}, pageSize {}", page, pageSize);
 
         Pageable pageable = paginationService.createPageable(page, pageSize);
 
@@ -85,6 +90,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public AuditLogResponse getAuditLogs(int page, int pageSize) {
+        log.debug("Fetching audit logs: page {}, pageSize {}", page, pageSize);
 
         Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")));
 
@@ -101,21 +107,29 @@ public class AdminServiceImpl implements AdminService {
     @Transactional
     public void setAdminRole(long userId) {
 
+        log.info("Assigning ADMIN role to user with ID: {}", userId);
         UserEntity fetchedUser = userService.getEntityByIdOrThrow(userId);
+
         fetchedUser.addRole(Role.ROLE_ADMIN);
         userRepository.save(fetchedUser);
+        log.info("Successfully updated role for user {}", userId);
 
-        auditLogService.logAction(
-                "UPDATE",
-                "UserEntity",
-                userId,
-                "User with ID " + userId + " assigned ADMIN role."
-        );
+        try {
+            auditLogService.logAction(
+                    "UPDATE",
+                    "UserEntity",
+                    userId,
+                    "User with ID " + userId + " assigned ADMIN role."
+            );
+        } catch (Exception ex) {
+            log.warn("Audit log failed for setAdminRole on user {}", userId, ex);
+        }
     }
 
     @Override
     @Transactional
     public void removeAdminRole(long userId) {
+        log.info("Removing ADMIN role from user with ID: {}", userId);
         // Fetch the user by ID
         UserEntity fetchedUser = userService.getEntityByIdOrThrow(userId);
 
@@ -123,13 +137,17 @@ public class AdminServiceImpl implements AdminService {
 
         // Save the updated user entity
         userRepository.save(fetchedUser);
+        log.info("Successfully removed role from user {}", userId);
 
-        // Log the action
-        auditLogService.logAction(
-                "UPDATE",
-                "UserEntity",
-                userId,
-                "User with ID " + userId + " removed ADMIN role."
-        );
+        try {
+            auditLogService.logAction(
+                    "UPDATE",
+                    "UserEntity",
+                    userId,
+                    "User with ID " + userId + " removed ADMIN role."
+            );
+        } catch (Exception ex) {
+            log.warn("Audit log failed for removeAdminRole on user {}", userId, ex);
+        }
     }
 }
