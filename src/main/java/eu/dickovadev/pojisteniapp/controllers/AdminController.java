@@ -112,7 +112,7 @@ public class AdminController {
     }
 
     @Secured("ROLE_ADMIN")
-    @GetMapping("/{userId}/add-admin")
+    @PostMapping("/{userId}/add-admin")
     public String addAdminRole(
             @PathVariable long userId,
             Model model,
@@ -134,7 +134,7 @@ public class AdminController {
     }
 
     @Secured("ROLE_ADMIN")
-    @GetMapping("/{userId}/remove-admin")
+    @DeleteMapping("/{userId}/remove-admin")
     public String removeAdminRole(
             @PathVariable long userId,
             Model model,

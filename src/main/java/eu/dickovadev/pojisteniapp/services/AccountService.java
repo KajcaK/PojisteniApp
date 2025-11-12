@@ -1,11 +1,12 @@
 package eu.dickovadev.pojisteniapp.services;
 
-import eu.dickovadev.pojisteniapp.models.dto.AccountDTO;
+import eu.dickovadev.pojisteniapp.models.dto.ChangePasswordDTO;
+import eu.dickovadev.pojisteniapp.models.dto.RegisterDTO;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface AccountService extends UserDetailsService {
 
-    void create(AccountDTO accountDTO);
+    void create(RegisterDTO registerDTO);
 
-    void changePassword(Long userId, String currentPassword, String newPassword, String confirmPassword);
+    void changePassword(Long userId, ChangePasswordDTO changePasswordDTO);
 }

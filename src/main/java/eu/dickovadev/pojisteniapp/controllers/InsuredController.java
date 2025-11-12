@@ -21,6 +21,14 @@ public class InsuredController {
 
     private final UserService userService;
 
+    private static final String VIEW_INDEX  = "pages/insured/index";
+    private static final String VIEW_CREATE = "pages/insured/create";
+    private static final String VIEW_EDIT = "pages/insured/edit";
+    private static final String VIEW_CUSTOMER_EDIT = "pages/insured/customer-edit";
+    private static final String VIEW_DETAIL = "pages/insured/detail";
+    private static final String REDIRECT_ROOT = "redirect:/insured";
+    public static final String REDIRECT_DETAIL = "redirect:/insured/%d/detail";
+
     @Autowired
     public InsuredController(UserService userService) {
         this.userService = userService;
@@ -48,7 +56,7 @@ public class InsuredController {
         model.addAttribute("totalItems", response.getPaginationMetadata().get("totalItems"));
         model.addAttribute("pageTitle", "Zákazníci");
 
-        return "pages/insured/index";
+        return VIEW_INDEX;
     }
 
     @Secured("ROLE_ADMIN")
@@ -58,7 +66,7 @@ public class InsuredController {
             Model model
     ) {
         model.addAttribute("pageTitle", "Vytvořit profil");
-        return "pages/insured/create";
+        return VIEW_CREATE;
     }
 
     @Secured("ROLE_ADMIN")
@@ -81,7 +89,7 @@ public class InsuredController {
         redirectAttributes.addFlashAttribute("success", "Pojištěnec přidán.");
         redirectAttributes.addAttribute("userId", userId);
 
-        return "redirect:/insured/{userId}/detail";
+        return String.format(REDIRECT_DETAIL, userId);
     }
 
     @PreAuthorize("#userId == authentication.principal.userId or hasRole('ROLE_ADMIN')")
@@ -105,7 +113,7 @@ public class InsuredController {
         model.addAttribute("totalItems", response.getPaginationMetadata().get("totalItems"));
         model.addAttribute("pageTitle", "Detail");
 
-        return "pages/insured/detail";
+        return VIEW_DETAIL;
     }
 
     @Secured("ROLE_ADMIN")
@@ -118,7 +126,7 @@ public class InsuredController {
         userService.getUserEditData(userId, user);
 
         model.addAttribute("pageTitle", "Upravit osobu");
-        return "pages/insured/edit";
+        return VIEW_EDIT;
     }
 
     @Secured("ROLE_ADMIN")
@@ -137,7 +145,7 @@ public class InsuredController {
 
         redirectAttributes.addFlashAttribute("success", "Změny uloženy.");
 
-        return "redirect:/insured/" + userId + "/detail";
+        return String.format(REDIRECT_DETAIL, userId);
     }
 
     @Secured("ROLE_ADMIN")
@@ -149,7 +157,7 @@ public class InsuredController {
         userService.remove(userId);
 
         redirectAttributes.addFlashAttribute("success", "Uživatel smazán.");
-        return "redirect:/insured";
+        return REDIRECT_ROOT;
     }
 
     @PreAuthorize("#userId == authentication.principal.userId")
@@ -162,7 +170,7 @@ public class InsuredController {
         userService.getUserEditData(userId, user);
 
         model.addAttribute("pageTitle", "Upravit osobu");
-        return "pages/insured/customer-edit";
+        return VIEW_CUSTOMER_EDIT;
     }
 
     @PreAuthorize("#userId == authentication.principal.userId")
@@ -175,12 +183,12 @@ public class InsuredController {
             Model model
     ) {
         if (result.hasErrors())
-            return renderEditForm(userId, user, model);
+            return renderCustomerEditForm(userId, user, model);
 
         userService.editByCustomer(user, userId);
 
         redirectAttributes.addFlashAttribute("success", "Změny uloženy.");
 
-        return "redirect:/insured/" + userId + "/detail";
+        return String.format(REDIRECT_DETAIL, userId);
     }
 }

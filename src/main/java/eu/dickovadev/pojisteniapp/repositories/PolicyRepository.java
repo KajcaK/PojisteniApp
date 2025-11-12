@@ -46,7 +46,7 @@ public interface PolicyRepository extends CrudRepository<PolicyEntity, Long> {
     @Query("SELECT AVG(p.coverageAmount) FROM PolicyEntity p WHERE p.type = :type")
     Double averagePolicyCoverageByType(@Param("type") PolicyType type);
 
-    @Query("SELECT AVG(DATEDIFF(p.endDate, p.startDate)) FROM PolicyEntity p")
+    @Query(value = "SELECT AVG(end_date - start_date) FROM policy_entity", nativeQuery = true)
     Double averagePolicyDuration();
 
 }

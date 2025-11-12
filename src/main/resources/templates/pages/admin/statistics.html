@@ -91,11 +91,11 @@
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <strong><i class="bi bi-cash-coin me-2"></i>Průměr:</strong>
-                            <span th:text="${@numberUtil.formatCurrency(statistics.avgStats.averagePolicyCoverage)}"></span>
+                            <span th:text="${@numberUtil.formatCurrency(statistics?.avgStats?.averagePolicyCoverage ?: 0)}"></span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <strong><i class="bi bi-hourglass-split me-2"></i>Průměrná doba:</strong>
-                            <span th:text="${@numberUtil.formatNumberDays(statistics.avgStats.averagePolicyDuration)}"></span>
+                            <span th:text="${@numberUtil.formatNumberDays(statistics?.avgStats?.averagePolicyDuration ?: 0)}"></span>
                         </li>
                     </ul>
                 </div>
@@ -153,15 +153,15 @@
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <strong><i class="bi bi-cash-coin me-2"></i>Výše krytí:</strong>
-                                <span th:text="${@numberUtil.formatCurrency(statistics.eventStats.totalOriginalClaimAmountEvents)}"></span>
+                                <span th:text="${@numberUtil.formatCurrency(statistics?.eventStats?.totalOriginalClaimAmountEvents ?: 0)}"></span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <strong><i class="bi bi-piggy-bank me-2"></i>Vyplaceno:</strong>
-                                <span th:text="${@numberUtil.formatCurrency(statistics.eventStats.totalAmountPaid)}"></span>
+                                <span th:text="${@numberUtil.formatCurrency(statistics?.eventStats?.totalAmountPaid ?: 0)}"></span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <strong><i class="bi bi-file-bar-graph me-2"></i>Průměrná výše krytí:</strong>
-                                <span th:text="${@numberUtil.formatCurrency(statistics.avgStats.averageEventClaimAmount)}"></span>
+                                <span th:text="${@numberUtil.formatCurrency(statistics?.avgStats?.averageEventClaimAmount ?: 0a )}"></span>
                             </li>
                         </ul>
                     </div>

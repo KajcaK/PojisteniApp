@@ -2,11 +2,10 @@ package eu.dickovadev.pojisteniapp.controllers;
 
 
 import eu.dickovadev.pojisteniapp.entities.UserEntity;
-import eu.dickovadev.pojisteniapp.models.dto.AccountDTO;
+import eu.dickovadev.pojisteniapp.models.dto.RegisterDTO;
 import eu.dickovadev.pojisteniapp.models.dto.ChangePasswordDTO;
 import eu.dickovadev.pojisteniapp.models.exceptions.DuplicateEmailException;
 import eu.dickovadev.pojisteniapp.models.exceptions.InvalidPasswordException;
-import eu.dickovadev.pojisteniapp.models.exceptions.PasswordsDoNotEqualException;
 import eu.dickovadev.pojisteniapp.services.AccountService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -21,13 +20,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import static eu.dickovadev.pojisteniapp.controllers.InsuredController.REDIRECT_DETAIL;
+
 @Controller
 @RequestMapping("/account")
 public class AccountController {
 
     private final AccountService accountService;
-    private static final String REGISTER_VIEW = "pages/account/register";
-    private static final String LOGIN_VIEW = "pages/account/login";
+    private static final String VIEW_REGISTER = "pages/account/register";
+    private static final String VIEW_LOGIN = "pages/account/login";
     private static final String CHANGE_PASSWORD_VIEW = "pages/account/change-password";
 
     @Autowired
@@ -46,37 +47,34 @@ public class AccountController {
             session.removeAttribute("error"); // Clear after use
         }
 
-        return LOGIN_VIEW;
+        return VIEW_LOGIN;
     }
 
     @GetMapping("register")
     public String renderRegister(
-            @ModelAttribute AccountDTO accountDTO,
+            @ModelAttribute RegisterDTO registerDTO,
             Model model
     ) {
         model.addAttribute("pageTitle", "Registrace");
-        return REGISTER_VIEW;
+        return VIEW_REGISTER;
     }
 
     @PostMapping("register")
     public String register(
-            @Valid @ModelAttribute AccountDTO accountDTO,
+            @Valid @ModelAttribute RegisterDTO registerDTO,
             BindingResult result,
             RedirectAttributes redirectAttributes,
             Model model
     ) {
-        if (result.hasErrors())
-            renderRegister(accountDTO, model);
+        if (result.hasErrors()) {
+            return VIEW_REGISTER;
+        }
 
         try {
-            accountService.create(accountDTO);
+            accountService.create(registerDTO);
         } catch (DuplicateEmailException ex) {
             result.rejectValue("email", "error", ex.getMessage());
-            return REGISTER_VIEW;
-        } catch (PasswordsDoNotEqualException ex) {
-            result.rejectValue("password", "error", ex.getMessage());
-            result.rejectValue("confirmPassword", "error", ex.getMessage());
-            return REGISTER_VIEW;
+            return VIEW_REGISTER;
         }
 
         redirectAttributes.addFlashAttribute("success", "Uživatel zaregistrován.");
@@ -101,26 +99,21 @@ public class AccountController {
             Model model
     ) {
         if (result.hasErrors()) {
-            renderChangePassword(changePasswordDTO, model);
+            return CHANGE_PASSWORD_VIEW;
         }
 
         try {
             accountService.changePassword(
                     user.getUserId(),
-                    changePasswordDTO.getCurrentPassword(),
-                    changePasswordDTO.getNewPassword(),
-                    changePasswordDTO.getConfirmPassword()
+                    changePasswordDTO
             );
             redirectAttributes.addFlashAttribute("success", "Heslo změněno.");
-            return "redirect:/insured/" + user.getUserId() + "/detail";
+            return String.format(REDIRECT_DETAIL, user.getUserId());
 
         } catch (InvalidPasswordException ex) {
             result.rejectValue("currentPassword", "error", ex.getMessage());
-        } catch (PasswordsDoNotEqualException ex) {
-            result.rejectValue("newPassword", "error", ex.getMessage());
-            result.rejectValue("confirmPassword", "error", ex.getMessage());
+            return CHANGE_PASSWORD_VIEW;
         }
-
-        return CHANGE_PASSWORD_VIEW;
     }
+
 }

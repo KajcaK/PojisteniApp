@@ -1,13 +1,13 @@
 package eu.dickovadev.pojisteniapp.services;
 
 import eu.dickovadev.pojisteniapp.entities.UserEntity;
+import eu.dickovadev.pojisteniapp.models.dto.ChangePasswordDTO;
 import eu.dickovadev.pojisteniapp.models.exceptions.AccessDeniedException;
 import eu.dickovadev.pojisteniapp.models.exceptions.InvalidPasswordException;
 import eu.dickovadev.pojisteniapp.repositories.UserRepository;
-import eu.dickovadev.pojisteniapp.models.dto.AccountDTO;
+import eu.dickovadev.pojisteniapp.models.dto.RegisterDTO;
 import eu.dickovadev.pojisteniapp.models.enums.Role;
 import eu.dickovadev.pojisteniapp.models.exceptions.DuplicateEmailException;
-import eu.dickovadev.pojisteniapp.models.exceptions.PasswordsDoNotEqualException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.Authentication;
@@ -41,9 +41,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public void create(AccountDTO user){
-
-        validatePasswordMatch(user.getPassword(), user.getConfirmPassword());
+    public void create(RegisterDTO user){
 
         UserEntity userEntity = new UserEntity();
 
@@ -68,7 +66,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Transactional
     @Override
-    public void changePassword(Long userId, String currentPassword, String newPassword, String confirmPassword) {
+    public void changePassword(Long userId, ChangePasswordDTO changePasswordDTO) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserEntity authenticatedUser = (UserEntity) authentication.getPrincipal();
@@ -76,19 +74,16 @@ public class AccountServiceImpl implements AccountService {
             throw new AccessDeniedException();
         }
 
-        // Validate new passwords match
-        validatePasswordMatch(newPassword, confirmPassword);
-
         // Retrieve user entity from database
         UserEntity userEntity = userService.getEntityByIdOrThrow(userId);
 
         // Validate current password matches stored password
-        if (!passwordEncoder.matches(currentPassword, userEntity.getPassword())) {
+        if (!passwordEncoder.matches(changePasswordDTO.getCurrentPassword(), userEntity.getPassword())) {
             throw new InvalidPasswordException();
         }
 
         // Encode and set the new password
-        userEntity.setPassword(passwordEncoder.encode(newPassword));
+        userEntity.setPassword(passwordEncoder.encode(changePasswordDTO.getNewPassword()));
 
         // Save the updated user entity
         userRepository.save(userEntity);
@@ -106,11 +101,5 @@ public class AccountServiceImpl implements AccountService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Username, " + username + " not found"));
-    }
-
-    private void validatePasswordMatch(String password, String confirmPassword) {
-        if (!password.equals(confirmPassword)) {
-            throw new PasswordsDoNotEqualException();
-        }
     }
 }

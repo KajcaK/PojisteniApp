@@ -150,14 +150,12 @@ public class PolicyServiceImpl implements PolicyService {
     }
 
     @Override
-    @Transactional
     public Page<PolicyDTO> getAll(Pageable pageable) {
         return policyRepository.findAll(pageable)
                 .map(policy -> policyMapper.toDTO(policy));
     }
 
     @Override
-    @Transactional
     public PolicyDTO getByIdOrElseThrow(long policyId) {
         // Fetch the policy and load associated policyHolder and insuredUser
         PolicyEntity fetchedPolicy = policyRepository.findByIdWithUserDetails(policyId)

@@ -9,7 +9,7 @@ import java.util.Locale;
 @Component
 public class NumberUtil {
 
-    public String formatNumberDays(double num) {
+    public String formatNumberDays(Double num) {
         DecimalFormat df = new DecimalFormat("#,##0.0", getCzechFormatSymbols());
         String formattedNum = df.format(num);
 
@@ -25,7 +25,7 @@ public class NumberUtil {
         return formattedNum + suffix;
     }
 
-    public String formatCurrency(double num) {
+    public String formatCurrency(Double num) {
         DecimalFormat df = new DecimalFormat("#,##0", getCzechFormatSymbols());
         return df.format(num) + " Kč";
     }

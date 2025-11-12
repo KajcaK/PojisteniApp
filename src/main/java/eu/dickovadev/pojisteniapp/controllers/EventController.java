@@ -1,6 +1,5 @@
 package eu.dickovadev.pojisteniapp.controllers;
 
-import eu.dickovadev.pojisteniapp.entities.UserEntity;
 import eu.dickovadev.pojisteniapp.models.dto.EventDTO;
 import eu.dickovadev.pojisteniapp.models.enums.EventStatus;
 import eu.dickovadev.pojisteniapp.models.exceptions.AccessDeniedException;
@@ -9,7 +8,6 @@ import eu.dickovadev.pojisteniapp.models.responses.EventDetailResponse;
 import eu.dickovadev.pojisteniapp.models.responses.EventEditResponse;
 import eu.dickovadev.pojisteniapp.models.responses.EventIndexResponse;
 import eu.dickovadev.pojisteniapp.services.EventService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -26,6 +24,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class EventController {
 
     private final EventService eventService;
+
+    private static final String VIEW_INDEX = "pages/event/index";
+    private static final String VIEW_CREATE = "pages/event/create";
+    private static final String VIEW_DETAIL = "pages/event/detail";
+    private static final String VIEW_EDIT = "pages/event/edit";
+    private static final String VIEW_REPORT = "pages/event/report";
+    private static final String REDIRECT_DETAIL = "redirect:/event/%d/detail";
+    private static final String REDIRECT_POLICY_DETAIL = "redirect:/policy/%d/detail"; //TODO: move to policy
 
     @Autowired
     public EventController(
@@ -57,7 +63,7 @@ public class EventController {
         model.addAttribute("eventStatuses", EventStatus.values()); //Enum values for view
         model.addAttribute("pageTitle", "Událost - index");
 
-        return "pages/event/index";
+        return VIEW_INDEX;
     }
 
     @Secured("ROLE_ADMIN")
@@ -75,7 +81,7 @@ public class EventController {
         model.addAttribute("eventStatus", response.getEventStatuses()); // Dropdown options for event status
         model.addAttribute("pageTitle", "Vytvořit událost");
 
-        return "pages/event/create";
+        return VIEW_CREATE;
     }
 
     @Secured("ROLE_ADMIN")
@@ -96,7 +102,7 @@ public class EventController {
 
         redirectAttributes.addFlashAttribute("success", "Událost vytvořena.");
 
-        return "redirect:/policy/" + policyId + "/detail";
+        return String.format(REDIRECT_POLICY_DETAIL, policyId);
     }
 
     @PreAuthorize("isAuthenticated() or hasRole('ROLE_ADMIN')")
@@ -114,7 +120,7 @@ public class EventController {
         model.addAttribute("sameUser", response.getPolicy().isSameUser());
         model.addAttribute("pageTitle", "Událost");
 
-        return "pages/event/detail";
+        return VIEW_DETAIL;
     }
 
     @Secured("ROLE_ADMIN")
@@ -132,7 +138,7 @@ public class EventController {
         model.addAttribute("policyId", response.getEvent().getPolicyId()); //pass policyId to form
         model.addAttribute("pageTitle", "Upravit událost");
 
-        return "pages/event/edit";
+        return VIEW_EDIT;
     }
 
     @Secured("ROLE_ADMIN")
@@ -151,7 +157,7 @@ public class EventController {
         eventService.edit(event, eventId);
         redirectAttributes.addFlashAttribute("success", "Změny uloženy.");
 
-        return "redirect:/event/" + eventId + "/detail";
+        return String.format(REDIRECT_DETAIL, eventId);
     }
 
     @Secured("ROLE_ADMIN")
@@ -165,7 +171,7 @@ public class EventController {
 
         redirectAttributes.addFlashAttribute("success", "Událost smazána.");
 
-        return "redirect:/policy/" + policyId + "/detail";
+        return String.format(REDIRECT_POLICY_DETAIL, policyId);
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -183,10 +189,10 @@ public class EventController {
             model.addAttribute("eventTypes", response.getAvailableEventTypes()); // Dropdown options for event type
             model.addAttribute("pageTitle", "Vytvořit událost");
 
-            return "pages/event/report";
+            return VIEW_REPORT;
 
         } catch (AccessDeniedException e) {
-            return "access-denied";
+            return "access-denied"; //TODO: constants for errors
         }
     }
 
@@ -209,7 +215,7 @@ public class EventController {
 
             redirectAttributes.addFlashAttribute("success", "Událost nahlášena.");
 
-            return "redirect:/policy/" + policyId + "/detail";
+            return String.format(REDIRECT_POLICY_DETAIL, policyId);
 
         } catch (AccessDeniedException e) {
             return "access-denied";
