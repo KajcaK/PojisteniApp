@@ -70,6 +70,7 @@ public class AccountServiceImpl implements AccountService {
             throw new DuplicateEmailException();
         } catch (Exception ex) {
             log.error("Unexpected error during user registration", ex);
+            throw ex;
         }
     }
 

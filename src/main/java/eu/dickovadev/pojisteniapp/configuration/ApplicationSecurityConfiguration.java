@@ -3,6 +3,8 @@ package eu.dickovadev.pojisteniapp.configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -35,10 +37,10 @@ public class ApplicationSecurityConfiguration {
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/account/login",
-                                "/account/logout",
-                                "/account/register",
-                                "/account/change-password",
+                                "/api//account/login",
+                                "/api//account/logout",
+                                "/api//account/register",
+                                "/api//account/change-password",
                                 "/access-denied",
                                 "/error",
                                 "/404",
@@ -72,13 +74,20 @@ public class ApplicationSecurityConfiguration {
     @Bean
     public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
         var config = new org.springframework.web.cors.CorsConfiguration();
-        config.setAllowedOrigins(java.util.List.of("http://localhost:5173","http://127.0.0.1:5173"));
+        config.setAllowedOrigins(java.util.List.of("http://localhost:5173","http://127.0.0.1:5173", "http://app:5173"));
         config.setAllowCredentials(true);
         config.setAllowedMethods(java.util.List.of("GET","POST","PUT","DELETE","PATCH","OPTIONS","HEAD"));
         config.setAllowedHeaders(java.util.List.of("*"));
         var source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration configuration
+    ) throws Exception {
+        return configuration.getAuthenticationManager();
     }
 
 
