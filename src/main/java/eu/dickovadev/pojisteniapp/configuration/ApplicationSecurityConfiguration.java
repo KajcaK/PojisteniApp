@@ -37,10 +37,8 @@ public class ApplicationSecurityConfiguration {
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api//account/login",
-                                "/api//account/logout",
-                                "/api//account/register",
-                                "/api//account/change-password",
+                                "/api/account/login",
+                                "/api/account/register",
                                 "/access-denied",
                                 "/error",
                                 "/404",
@@ -57,8 +55,8 @@ public class ApplicationSecurityConfiguration {
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .loginPage("/account/login")
-                        .loginProcessingUrl("/account/login")
+                        .loginPage("/api/account/login")
+                        .loginProcessingUrl("/api/account/login")
                         .defaultSuccessUrl("/", true)
                         .usernameParameter("email")
                         .successHandler(customAuthenticationSuccessHandler)

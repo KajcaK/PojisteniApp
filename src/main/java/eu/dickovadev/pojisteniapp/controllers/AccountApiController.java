@@ -2,6 +2,7 @@ package eu.dickovadev.pojisteniapp.controllers;
 
 import eu.dickovadev.pojisteniapp.entities.UserEntity;
 import eu.dickovadev.pojisteniapp.models.dto.ChangePasswordDTO;
+import eu.dickovadev.pojisteniapp.models.dto.CurrentUserDTO;
 import eu.dickovadev.pojisteniapp.models.dto.LoginDTO;
 import eu.dickovadev.pojisteniapp.models.dto.RegisterDTO;
 import eu.dickovadev.pojisteniapp.models.exceptions.DuplicateEmailException;
@@ -16,10 +17,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -126,4 +124,17 @@ public class AccountApiController {
                 "message", "Heslo bylo úspěšně změněno."
         ));
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> me() {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null || !(auth.getPrincipal() instanceof UserEntity user)) {
+            return ResponseEntity.status(401).build();
+        }
+
+        var dto = new CurrentUserDTO(user.getUserId(), user.getEmail(), user.getRoles());
+        return ResponseEntity.ok(dto);
+    }
+
 }

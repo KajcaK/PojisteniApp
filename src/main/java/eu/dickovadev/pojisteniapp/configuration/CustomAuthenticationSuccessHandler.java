@@ -33,7 +33,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 request.getSession().setAttribute("badge", user.getFirstName() + " " + user.getLastName());
             }
         } else {
-            response.sendRedirect("/account/login");
+            response.sendRedirect("/api/account/login");
         }
         response.sendRedirect("/");
     }

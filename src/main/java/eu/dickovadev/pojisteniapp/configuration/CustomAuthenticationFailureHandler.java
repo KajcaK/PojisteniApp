@@ -22,6 +22,6 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 
         request.getSession().setAttribute("error", "Neplatné uživatelské jméno nebo heslo. Zkuste to prosím znovu.");
 
-        response.sendRedirect("/account/login");
+        response.sendRedirect("/api/account/login");
     }
 }
