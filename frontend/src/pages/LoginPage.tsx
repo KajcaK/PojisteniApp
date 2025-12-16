@@ -1,61 +1,67 @@
-import React, { useState } from "react";
+import type { FormEvent, JSX } from "react";
+import type { AxiosError } from "axios";
 import { Stack, TextField, Button, Alert } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+
 import { FormWrapper } from "../components/common/FormWrapper";
-import { api } from "../api/axios";
-import type { LoginRequest } from "../types/account.ts";
+import { useAuth } from "../context/AuthContext";
+import { useFormHandler } from "../hooks/useFormHandler";
+import type { LoginRequest } from "../types/account";
 
-type FieldErrors = Partial<Record<keyof LoginRequest, string>>;
+type LoginField = keyof LoginRequest;
+type FieldErrors = Partial<Record<LoginField, string>>;
 
-function LoginPage() {
-    const [form, setForm] = useState<LoginRequest>({
+interface LoginErrorResponse {
+    type?: string;
+    errors?: FieldErrors;
+    message?: string;
+}
+
+function LoginPage(): JSX.Element {
+    const navigate = useNavigate();
+    const { login } = useAuth();
+
+    const {
+        form,
+        handleChange,
+        loading,
+        setLoading,
+        fieldErrors,
+        setFieldErrors,
+        globalError,
+        setGlobalError,
+        successMessage,
+        setSuccessMessage,
+        resetMessages,
+    } = useFormHandler<LoginRequest>({
         email: "",
         password: "",
     });
 
-    const [loading, setLoading] = useState(false);
-    const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-    const [globalError, setGlobalError] = useState<string | null>(null);
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
-    const handleChange =
-        (field: keyof LoginRequest) =>
-            (event: React.ChangeEvent<HTMLInputElement>) => {
-                const value = event.target.value;
-                setForm(prev => ({ ...prev, [field]: value }));
-                // clear field-specific error & global messages when user edits
-                setFieldErrors(prev => ({ ...prev, [field]: undefined }));
-                setGlobalError(null);
-                setSuccessMessage(null);
-            };
-
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (
+        e: FormEvent<HTMLFormElement>
+    ): Promise<void> => {
         e.preventDefault();
+        if (loading) return;
+
         setLoading(true);
-        setGlobalError(null);
-        setFieldErrors({});
-        setSuccessMessage(null);
+        resetMessages();
 
         try {
-            const response = await api.post("/account/login", form);
+            // AuthContext handles API call + token, etc.
+            await login(form.email, form.password);
 
-            // TODO: handle token/user from response once backend is ready
-            // e.g. save JWT, set auth context, redirect, etc.
-            // For now just show a success message:
             setSuccessMessage("Přihlášení proběhlo úspěšně.");
-
-            // later:
-            // authContext.login(response.data);
-            // navigate("/dashboard");
-        } catch (err: any) {
-            const status = err?.response?.status;
-            const data = err?.response?.data;
+            // optional: small delay and then redirect, or just redirect
+            navigate("/"); // or "/dashboard"
+        } catch (error: unknown) {
+            const err = error as AxiosError<LoginErrorResponse>;
+            const status = err.response?.status;
+            const data = err.response?.data;
 
             if (status === 400 && data?.type === "validation") {
-                // shape from ApiExceptionHandler:
-                // { type: "validation", errors: { field: message } }
                 setFieldErrors(data.errors ?? {});
             } else if (status === 401) {
-                // invalid credentials
                 setGlobalError(
                     data?.message || "Neplatný e-mail nebo heslo."
                 );
@@ -74,6 +80,7 @@ function LoginPage() {
                     {globalError && (
                         <Alert severity="error">{globalError}</Alert>
                     )}
+
                     {successMessage && (
                         <Alert severity="success">{successMessage}</Alert>
                     )}
@@ -87,6 +94,7 @@ function LoginPage() {
                         onChange={handleChange("email")}
                         error={Boolean(fieldErrors.email)}
                         helperText={fieldErrors.email}
+                        autoComplete="email"
                     />
 
                     <TextField
@@ -98,6 +106,7 @@ function LoginPage() {
                         onChange={handleChange("password")}
                         error={Boolean(fieldErrors.password)}
                         helperText={fieldErrors.password}
+                        autoComplete="current-password"
                     />
 
                     <Button

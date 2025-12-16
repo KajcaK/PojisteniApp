@@ -1,57 +1,66 @@
-import React, { useState } from "react";
+import type { FormEvent, JSX } from "react";
+import type { AxiosError } from "axios";
 import { Stack, TextField, Button, Alert } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+
 import { FormWrapper } from "../components/common/FormWrapper";
 import { api } from "../api/axios";
-import type { RegisterRequest } from "../types/account.ts";
+import { useFormHandler } from "../hooks/useFormHandler";
+import type { RegisterRequest } from "../types/account";
 
-type FieldErrors = Partial<Record<keyof RegisterRequest, string>>;
+type RegisterField = keyof RegisterRequest;
+type FieldErrors = Partial<Record<RegisterField, string>>;
 
-function RegisterPage() {
-    const [form, setForm] = useState<RegisterRequest>({
+interface RegisterErrorResponse {
+    type?: string;
+    errors?: FieldErrors;
+    field?: RegisterField;
+    message?: string;
+}
+
+function RegisterPage(): JSX.Element {
+    const navigate = useNavigate();
+
+    const {
+        form,
+        handleChange,
+        loading,
+        setLoading,
+        fieldErrors,
+        setFieldErrors,
+        globalError,
+        setGlobalError,
+        successMessage,
+        setSuccessMessage,
+        resetMessages,
+    } = useFormHandler<RegisterRequest>({
         email: "",
         password: "",
         confirmPassword: "",
     });
 
-    const [loading, setLoading] = useState(false);
-    const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-    const [globalError, setGlobalError] = useState<string | null>(null);
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
-    const handleChange =
-        (field: keyof RegisterRequest) =>
-            (event: React.ChangeEvent<HTMLInputElement>) => {
-                const value = event.target.value;
-                setForm(prev => ({ ...prev, [field]: value }));
-                // Clear field-specific error as user types
-                setFieldErrors(prev => ({ ...prev, [field]: undefined }));
-                setGlobalError(null);
-                setSuccessMessage(null);
-            };
-
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (
+        e: FormEvent<HTMLFormElement>
+    ): Promise<void> => {
         e.preventDefault();
+        if (loading) return;
+
         setLoading(true);
-        setGlobalError(null);
-        setFieldErrors({});
-        setSuccessMessage(null);
+        resetMessages();
 
         try {
-            const response = await api.post("/account/register", form);
+            await api.post<void>("/account/register", form);
 
-            // success
             setSuccessMessage("Účet úspěšně vytvořen. Můžete se přihlásit.");
-            // later: redirect to /login
-            // navigate("/login");
-        } catch (err: any) {
-            const status = err?.response?.status;
-            const data = err?.response?.data;
+            navigate("/login");
+        } catch (error: unknown) {
+            const err = error as AxiosError<RegisterErrorResponse>;
+            const status = err.response?.status;
+            const data = err.response?.data;
 
             if (status === 400 && data?.type === "validation") {
-                // shape from ApiExceptionHandler: { type: "validation", errors: { field: message } }
                 setFieldErrors(data.errors ?? {});
             } else if (status === 409 && data?.field === "email") {
-                // Duplicate email conflict
                 setFieldErrors(prev => ({
                     ...prev,
                     email: data.message || "Tento e-mail je již registrován.",
@@ -68,8 +77,13 @@ function RegisterPage() {
         <FormWrapper title="Registrace">
             <form onSubmit={handleSubmit} noValidate>
                 <Stack spacing={2.5}>
-                    {globalError && <Alert severity="error">{globalError}</Alert>}
-                    {successMessage && <Alert severity="success">{successMessage}</Alert>}
+                    {globalError && (
+                        <Alert severity="error">{globalError}</Alert>
+                    )}
+
+                    {successMessage && (
+                        <Alert severity="success">{successMessage}</Alert>
+                    )}
 
                     <TextField
                         label="Email"
@@ -80,6 +94,7 @@ function RegisterPage() {
                         onChange={handleChange("email")}
                         error={Boolean(fieldErrors.email)}
                         helperText={fieldErrors.email}
+                        autoComplete="email"
                     />
 
                     <TextField
@@ -91,6 +106,7 @@ function RegisterPage() {
                         onChange={handleChange("password")}
                         error={Boolean(fieldErrors.password)}
                         helperText={fieldErrors.password}
+                        autoComplete="new-password"
                     />
 
                     <TextField
@@ -102,6 +118,7 @@ function RegisterPage() {
                         onChange={handleChange("confirmPassword")}
                         error={Boolean(fieldErrors.confirmPassword)}
                         helperText={fieldErrors.confirmPassword}
+                        autoComplete="new-password"
                     />
 
                     <Button

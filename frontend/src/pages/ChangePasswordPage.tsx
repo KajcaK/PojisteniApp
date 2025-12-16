@@ -1,72 +1,88 @@
-import React, { useState } from "react";
+import type { FormEvent, JSX } from "react";
+import type { AxiosError } from "axios";
 import { Stack, TextField, Button, Alert } from "@mui/material";
+
 import { FormWrapper } from "../components/common/FormWrapper";
 import { api } from "../api/axios";
-import type { ChangePasswordRequest } from "../types/account.ts";
+import { useFormHandler } from "../hooks/useFormHandler";
+import type { ChangePasswordRequest } from "../types/account";
 
-type FieldErrors = Partial<Record<keyof ChangePasswordRequest, string>>;
+type ChangePasswordField = keyof ChangePasswordRequest;
+type FieldErrors = Partial<Record<ChangePasswordField, string>>;
 
-function ChangePasswordPage() {
-    const [form, setForm] = useState<ChangePasswordRequest>({
+interface ChangePasswordErrorResponse {
+    type?: string;
+    errors?: FieldErrors;
+    field?: ChangePasswordField;
+    message?: string;
+}
+
+function ChangePasswordPage(): JSX.Element {
+    const {
+        form,
+        handleChange,
+        loading,
+        setLoading,
+        fieldErrors,
+        setFieldErrors,
+        globalError,
+        setGlobalError,
+        successMessage,
+        setSuccessMessage,
+        resetMessages,
+    } = useFormHandler<ChangePasswordRequest>({
         currentPassword: "",
         newPassword: "",
-        confirmPassword: "",
+        confirmNewPassword: "",
     });
 
-    const [loading, setLoading] = useState(false);
-    const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-    const [globalError, setGlobalError] = useState<string | null>(null);
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
-    const handleChange =
-        (field: keyof ChangePasswordRequest) =>
-            (event: React.ChangeEvent<HTMLInputElement>) => {
-                const value = event.target.value;
-                setForm(prev => ({ ...prev, [field]: value }));
-
-                // clear field-specific error & global messages when user edits
-                setFieldErrors(prev => ({ ...prev, [field]: undefined }));
-                setGlobalError(null);
-                setSuccessMessage(null);
-            };
-
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (
+        e: FormEvent<HTMLFormElement>
+    ): Promise<void> => {
         e.preventDefault();
         if (loading) return;
 
         setLoading(true);
-        setGlobalError(null);
-        setFieldErrors({});
-        setSuccessMessage(null);
+        resetMessages();
 
-        // @ts-ignore
+        // simple client-side check before hitting API
+        if (form.newPassword !== form.confirmNewPassword) {
+            setFieldErrors(prev => ({
+                ...prev,
+                confirmNewPassword: "Nové heslo a potvrzení se neshodují.",
+            }));
+            setLoading(false);
+            return;
+        }
+
         try {
-            const response = await api.post("/account/change-password", form);
+            await api.post<void>("/account/change-password", form);
 
-            if (response.status === 200) {
-                setSuccessMessage("Heslo bylo úspěšně změněno.");
-                // optional later: reset form, redirect, etc.
-                // setForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
-            } else {
-                setGlobalError("Něco se rozbilo. Zkuste to prosím znovu.");
-            }
-        } catch (err: any) {
-            const status = err?.response?.status;
-            const data = err?.response?.data;
+            setSuccessMessage("Heslo bylo úspěšně změněno.");
+            // optional: reset form later if you want
+            // setForm({ currentPassword: "", newPassword: "", confirmNewPassword: "" });
+        } catch (error: unknown) {
+            const err = error as AxiosError<ChangePasswordErrorResponse>;
+            const status = err.response?.status;
+            const data = err.response?.data;
 
             if (status === 400 && data?.type === "validation") {
                 // { type: "validation", errors: { field: message } }
                 setFieldErrors(data.errors ?? {});
-            } else if (status === 400 && data?.type === "business" && data?.field) {
-                // e.g. invalid current password mapped to currentPassword
+            } else if (status === 400 && data?.type === "business" && data.field) {
+                const field = data.field as ChangePasswordField;
+
                 setFieldErrors(prev => ({
                     ...prev,
-                    [data.field]: data.message || "Zadané heslo není správně.",
+                    [field]: data.message || "Zadané heslo není správně.",
                 }));
-            } else if ((status === 401 || status === 403) && data?.type === "auth") {
-                // not logged in / no permission
+            } else if (
+                (status === 401 || status === 403) &&
+                data?.type === "auth"
+            ) {
                 setGlobalError(
-                    data?.message || "Pro změnu hesla se prosím znovu přihlaste."
+                    data.message ||
+                    "Pro změnu hesla se prosím znovu přihlaste."
                 );
             } else {
                 setGlobalError("Něco se rozbilo. Zkuste to prosím znovu.");
@@ -81,6 +97,7 @@ function ChangePasswordPage() {
             <form onSubmit={handleSubmit} noValidate>
                 <Stack spacing={2.5}>
                     {globalError && <Alert severity="error">{globalError}</Alert>}
+
                     {successMessage && (
                         <Alert severity="success">{successMessage}</Alert>
                     )}
@@ -114,10 +131,10 @@ function ChangePasswordPage() {
                         type="password"
                         fullWidth
                         variant="outlined"
-                        value={form.confirmPassword}
-                        onChange={handleChange("confirmPassword")}
-                        error={Boolean(fieldErrors.confirmPassword)}
-                        helperText={fieldErrors.confirmPassword}
+                        value={form.confirmNewPassword}
+                        onChange={handleChange("confirmNewPassword")}
+                        error={Boolean(fieldErrors.confirmNewPassword)}
+                        helperText={fieldErrors.confirmNewPassword}
                         autoComplete="new-password"
                     />
 

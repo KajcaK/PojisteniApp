@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ReactNode, JSX } from "react";
 import { Box, Paper, Typography } from "@mui/material";
 
 type FormWrapperProps = {
@@ -40,7 +40,7 @@ export function FormWrapper({
                                 title,
                                 subtitle,
                                 maxWidth = 420,
-                            }: FormWrapperProps) {
+                            }: FormWrapperProps): JSX.Element {
     const hasHeader = Boolean(title || subtitle);
 
     return (
