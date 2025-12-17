@@ -1,5 +1,7 @@
 import { Routes, Route } from "react-router-dom";
-import { Box } from "@mui/material";
+
+import AppLayout from "./components/layout/AppLayout";
+import AuthLayout from "./components/layout/AuthLayout";
 
 import HomePage from "./pages/HomePage";
 import PoliciesPage from "./pages/PoliciesPage";
@@ -7,36 +9,36 @@ import EventsPage from "./pages/EventsPage";
 import AboutPage from "./pages/AboutPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-import TopNav from "./components/layout/TopNavBar.tsx";
-import ChangePasswordPage from "./pages/ChangePasswordPage.tsx";
-import {ProtectedRoute} from "./components/common/ProtectedRoute.tsx";
+import ChangePasswordPage from "./pages/ChangePasswordPage";
 
+import { ProtectedRoute } from "./components/common/ProtectedRoute";
 
 export default function App() {
-  return (
-    <>
-      {/* top navigation bar */}
-        <TopNav />
-
-      {/* page content */}
-      <Box sx={{ mt: 10, p: 3 }}>
+    return (
         <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/policies" element={<PoliciesPage />} />
-            <Route path="/events" element={<EventsPage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
+            {/* Auth-style pages */}
+            <Route element={<AuthLayout />}>
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
 
-            <Route path="/change-password"
-                   element={
-                       <ProtectedRoute>
-                           <ChangePasswordPage />
-                       </ProtectedRoute>
-                   }
-            />
+                {/* Auth-style but protected */}
+                <Route
+                    path="/change-password"
+                    element={
+                        <ProtectedRoute>
+                            <ChangePasswordPage />
+                        </ProtectedRoute>
+                    }
+                />
+            </Route>
+
+            {/* Main app */}
+            <Route element={<AppLayout />}>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/policies" element={<PoliciesPage />} />
+                <Route path="/events" element={<EventsPage />} />
+                <Route path="/about" element={<AboutPage />} />
+            </Route>
         </Routes>
-      </Box>
-    </>
-  );
+    );
 }

@@ -1,10 +1,17 @@
-import type { FormEvent, JSX } from "react";
+import type { FormEvent } from "react";
 import type { AxiosError } from "axios";
-import { Stack, TextField, Button, Alert } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import {
+    Stack,
+    TextField,
+    Button,
+    Alert,
+    CircularProgress,
+    Box,
+} from "@mui/material";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
 
 import { FormWrapper } from "../components/common/FormWrapper";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 import { useFormHandler } from "../hooks/useFormHandler";
 import type { LoginRequest } from "../types/account";
 
@@ -17,7 +24,7 @@ interface LoginErrorResponse {
     message?: string;
 }
 
-function LoginPage(): JSX.Element {
+export default function LoginPage() {
     const navigate = useNavigate();
     const { login } = useAuth();
 
@@ -30,17 +37,26 @@ function LoginPage(): JSX.Element {
         setFieldErrors,
         globalError,
         setGlobalError,
-        successMessage,
-        setSuccessMessage,
         resetMessages,
     } = useFormHandler<LoginRequest>({
         email: "",
         password: "",
     });
 
-    const handleSubmit = async (
-        e: FormEvent<HTMLFormElement>
-    ): Promise<void> => {
+    const canSubmit =
+        !loading &&
+        form.email.trim().length > 0 &&
+        form.password.trim().length > 0;
+
+    const onFieldChange = (field: LoginField) => (e: any) => {
+        if (globalError) setGlobalError(null);
+        if (fieldErrors[field]) {
+            setFieldErrors((prev) => ({ ...prev, [field]: undefined }));
+        }
+        handleChange(field)(e);
+    };
+
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (loading) return;
 
@@ -48,12 +64,8 @@ function LoginPage(): JSX.Element {
         resetMessages();
 
         try {
-            // AuthContext handles API call + token, etc.
             await login(form.email, form.password);
-
-            setSuccessMessage("Přihlášení proběhlo úspěšně.");
-            // optional: small delay and then redirect, or just redirect
-            navigate("/"); // or "/dashboard"
+            navigate("/", { replace: true });
         } catch (error: unknown) {
             const err = error as AxiosError<LoginErrorResponse>;
             const status = err.response?.status;
@@ -61,37 +73,36 @@ function LoginPage(): JSX.Element {
 
             if (status === 400 && data?.type === "validation") {
                 setFieldErrors(data.errors ?? {});
-            } else if (status === 401) {
-                setGlobalError(
-                    data?.message || "Neplatný e-mail nebo heslo."
-                );
-            } else {
-                setGlobalError("Něco se rozbilo. Zkuste to prosím znovu.");
+                return;
             }
+
+            if (status === 401) {
+                setGlobalError(data?.message ?? "Neplatný e-mail nebo heslo.");
+                return;
+            }
+
+            setGlobalError("Něco se rozbilo. Zkuste to prosím znovu.");
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <FormWrapper title="Přihlášení">
+        <FormWrapper
+            centered
+            title="Přihlášení"
+            subtitle="Použijte svůj e-mail a heslo."
+            maxWidth={420}
+        >
             <form onSubmit={handleSubmit} noValidate>
-                <Stack spacing={2.5}>
-                    {globalError && (
-                        <Alert severity="error">{globalError}</Alert>
-                    )}
-
-                    {successMessage && (
-                        <Alert severity="success">{successMessage}</Alert>
-                    )}
+                <Stack spacing={3}>
+                    {globalError && <Alert severity="error">{globalError}</Alert>}
 
                     <TextField
                         label="Email"
                         type="email"
-                        fullWidth
-                        variant="outlined"
                         value={form.email}
-                        onChange={handleChange("email")}
+                        onChange={onFieldChange("email")}
                         error={Boolean(fieldErrors.email)}
                         helperText={fieldErrors.email}
                         autoComplete="email"
@@ -100,10 +111,8 @@ function LoginPage(): JSX.Element {
                     <TextField
                         label="Heslo"
                         type="password"
-                        fullWidth
-                        variant="outlined"
                         value={form.password}
-                        onChange={handleChange("password")}
+                        onChange={onFieldChange("password")}
                         error={Boolean(fieldErrors.password)}
                         helperText={fieldErrors.password}
                         autoComplete="current-password"
@@ -112,16 +121,20 @@ function LoginPage(): JSX.Element {
                     <Button
                         type="submit"
                         variant="contained"
-                        color="primary"
                         fullWidth
-                        disabled={loading}
+                        disabled={!canSubmit}
+                        startIcon={loading ? <CircularProgress size={16} /> : undefined}
                     >
-                        {loading ? "Přihlašuji..." : "Přihlásit se"}
+                        {loading ? "Přihlašuji…" : "Přihlásit se"}
                     </Button>
+
+                    <Box sx={{ display: "flex", justifyContent: "center" }}>
+                        <Button component={RouterLink} to="/register" variant="text" size="small">
+                            Nemáte účet? Registrace
+                        </Button>
+                    </Box>
                 </Stack>
             </form>
         </FormWrapper>
     );
 }
-
-export default LoginPage;

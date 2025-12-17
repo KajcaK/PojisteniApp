@@ -12,7 +12,7 @@ export interface LoginRequest {
 export type ChangePasswordRequest = {
     currentPassword: string;
     newPassword: string;
-    confirmNewPassword: string;
+    confirmPassword: string;
 };
 
 export interface AuthUser {

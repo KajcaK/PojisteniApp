@@ -5,9 +5,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider, CssBaseline } from "@mui/material";
 
 import App from "./App";
-import { theme } from "./app/theme";
+import { theme } from "./theme/theme.ts";
 import "./styles/global.css";
-import {AuthProvider} from "./context/AuthContext.tsx";
+import {AuthProvider} from "./context/AuthProvider.tsx";
 
 const queryClient = new QueryClient();
 

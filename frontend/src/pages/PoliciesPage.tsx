@@ -1,9 +1,15 @@
-function PoliciesPage() {
+import {Stack, Typography} from "@mui/material";
+
+export default function PoliciesPage() {
   return (
-        <>
-            <p>Policies</p>
-        </>
+      <Stack spacing={2}>
+          <Typography variant="h3" component="h1">
+              Policies
+          </Typography>
+
+          <Typography variant="body1" color="text.secondary">
+              Placeholder
+          </Typography>
+      </Stack>
   );
 }
-
-export default PoliciesPage;

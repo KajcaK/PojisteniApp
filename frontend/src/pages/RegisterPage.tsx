@@ -1,7 +1,14 @@
-import type { FormEvent, JSX } from "react";
+import type { FormEvent } from "react";
 import type { AxiosError } from "axios";
-import { Stack, TextField, Button, Alert } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import {
+    Stack,
+    TextField,
+    Button,
+    Alert,
+    CircularProgress,
+    Box,
+} from "@mui/material";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
 
 import { FormWrapper } from "../components/common/FormWrapper";
 import { api } from "../api/axios";
@@ -18,7 +25,7 @@ interface RegisterErrorResponse {
     message?: string;
 }
 
-function RegisterPage(): JSX.Element {
+export default function RegisterPage() {
     const navigate = useNavigate();
 
     const {
@@ -30,8 +37,6 @@ function RegisterPage(): JSX.Element {
         setFieldErrors,
         globalError,
         setGlobalError,
-        successMessage,
-        setSuccessMessage,
         resetMessages,
     } = useFormHandler<RegisterRequest>({
         email: "",
@@ -39,20 +44,39 @@ function RegisterPage(): JSX.Element {
         confirmPassword: "",
     });
 
-    const handleSubmit = async (
-        e: FormEvent<HTMLFormElement>
-    ): Promise<void> => {
+    const canSubmit =
+        !loading &&
+        form.email.trim().length > 0 &&
+        form.password.trim().length > 0 &&
+        form.confirmPassword.trim().length > 0;
+
+    const onFieldChange = (field: RegisterField) => (e: any) => {
+        if (globalError) setGlobalError(null);
+        if (fieldErrors[field]) {
+            setFieldErrors((prev) => ({ ...prev, [field]: undefined }));
+        }
+        handleChange(field)(e);
+    };
+
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (loading) return;
 
         setLoading(true);
         resetMessages();
 
+        if (form.password !== form.confirmPassword) {
+            setFieldErrors((prev) => ({
+                ...prev,
+                confirmPassword: "Heslo a potvrzení se neshodují.",
+            }));
+            setLoading(false);
+            return;
+        }
+
         try {
             await api.post<void>("/account/register", form);
-
-            setSuccessMessage("Účet úspěšně vytvořen. Můžete se přihlásit.");
-            navigate("/login");
+            navigate("/login", { replace: true, state: { registered: true } });
         } catch (error: unknown) {
             const err = error as AxiosError<RegisterErrorResponse>;
             const status = err.response?.status;
@@ -60,38 +84,39 @@ function RegisterPage(): JSX.Element {
 
             if (status === 400 && data?.type === "validation") {
                 setFieldErrors(data.errors ?? {});
-            } else if (status === 409 && data?.field === "email") {
-                setFieldErrors(prev => ({
-                    ...prev,
-                    email: data.message || "Tento e-mail je již registrován.",
-                }));
-            } else {
-                setGlobalError("Něco se rozbilo. Zkuste to prosím znovu.");
+                return;
             }
+
+            if (status === 409 && data?.field === "email") {
+                setFieldErrors((prev) => ({
+                    ...prev,
+                    email: data.message ?? "Tento e-mail je již registrován.",
+                }));
+                return;
+            }
+
+            setGlobalError("Něco se rozbilo. Zkuste to prosím znovu.");
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <FormWrapper title="Registrace">
+        <FormWrapper
+            centered
+            title="Registrace"
+            subtitle="Vytvořte si účet během chvilky."
+            maxWidth={420}
+        >
             <form onSubmit={handleSubmit} noValidate>
-                <Stack spacing={2.5}>
-                    {globalError && (
-                        <Alert severity="error">{globalError}</Alert>
-                    )}
-
-                    {successMessage && (
-                        <Alert severity="success">{successMessage}</Alert>
-                    )}
+                <Stack spacing={3}>
+                    {globalError && <Alert severity="error">{globalError}</Alert>}
 
                     <TextField
                         label="Email"
                         type="email"
-                        fullWidth
-                        variant="outlined"
                         value={form.email}
-                        onChange={handleChange("email")}
+                        onChange={onFieldChange("email")}
                         error={Boolean(fieldErrors.email)}
                         helperText={fieldErrors.email}
                         autoComplete="email"
@@ -100,10 +125,8 @@ function RegisterPage(): JSX.Element {
                     <TextField
                         label="Heslo"
                         type="password"
-                        fullWidth
-                        variant="outlined"
                         value={form.password}
-                        onChange={handleChange("password")}
+                        onChange={onFieldChange("password")}
                         error={Boolean(fieldErrors.password)}
                         helperText={fieldErrors.password}
                         autoComplete="new-password"
@@ -112,10 +135,8 @@ function RegisterPage(): JSX.Element {
                     <TextField
                         label="Potvrzení hesla"
                         type="password"
-                        fullWidth
-                        variant="outlined"
                         value={form.confirmPassword}
-                        onChange={handleChange("confirmPassword")}
+                        onChange={onFieldChange("confirmPassword")}
                         error={Boolean(fieldErrors.confirmPassword)}
                         helperText={fieldErrors.confirmPassword}
                         autoComplete="new-password"
@@ -124,16 +145,20 @@ function RegisterPage(): JSX.Element {
                     <Button
                         type="submit"
                         variant="contained"
-                        color="primary"
                         fullWidth
-                        disabled={loading}
+                        disabled={!canSubmit}
+                        startIcon={loading ? <CircularProgress size={16} /> : undefined}
                     >
-                        {loading ? "Registruji..." : "Registrovat se"}
+                        {loading ? "Registruji…" : "Registrovat se"}
                     </Button>
+
+                    <Box sx={{ display: "flex", justifyContent: "center" }}>
+                        <Button component={RouterLink} to="/login" variant="text" size="small">
+                            Už máte účet? Přihlášení
+                        </Button>
+                    </Box>
                 </Stack>
             </form>
         </FormWrapper>
     );
 }
-
-export default RegisterPage;

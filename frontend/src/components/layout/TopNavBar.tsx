@@ -1,127 +1,61 @@
 import { AppBar, Toolbar, Typography, Button, Box, Stack } from "@mui/material";
 import { NavLink } from "react-router-dom";
 
+const linkSx = {
+    textDecoration: "none",
+};
+
 const TopNav = () => {
     return (
         <AppBar>
-            <Toolbar
-                sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 2,
-                }}
-            >
-                {/* LEFT: App name */}
-                <Box
-                    sx={{
-                        flex: 1,
-                        display: "flex",
-                        justifyContent: "flex-start",
-                    }}
-                >
+            <Toolbar sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                {/* Brand */}
+                <Box sx={{ flex: 1, display: "flex", justifyContent: "flex-start" }}>
                     <Typography
-                        variant="h6"
+                        variant="h5"
                         component={NavLink}
                         to="/"
-                        style={{ textDecoration: "none" }}
                         sx={{
-                            fontWeight: 700,
-                            letterSpacing: 0.5,
-                            color: "primary.main",
-                            "&:hover": { opacity: 0.9 },
+                            ...linkSx,
+                            color: "text.primary",
+                            letterSpacing: "-0.01em",
                         }}
                     >
                         PojištěníApp
                     </Typography>
                 </Box>
 
-                {/* CENTER: Navigation */}
-                <Box
-                    sx={{
-                        flex: 1,
-                        display: "flex",
-                        justifyContent: "center",
-                    }}
-                >
-                    <Stack direction="row" spacing={2}>
-                        <Button
-                            component={NavLink}
-                            to="/"
-                            variant="text"
-                            sx={{
-                                color: "text.secondary",
-                                fontSize: 14,
-                                fontWeight: 500,
-                                textTransform: "none",
-                            }}
-                        >
-                            Home
-                        </Button>
-
-                        <Button
-                            component={NavLink}
-                            to="/policies"
-                            variant="text"
-                            sx={{
-                                color: "text.secondary",
-                                fontSize: 14,
-                                fontWeight: 500,
-                                textTransform: "none",
-                            }}
-                        >
-                            Policies
-                        </Button>
-
-                        <Button
-                            component={NavLink}
-                            to="/events"
-                            variant="text"
-                            sx={{
-                                color: "text.secondary",
-                                fontSize: 14,
-                                fontWeight: 500,
-                                textTransform: "none",
-                            }}
-                        >
-                            Events
-                        </Button>
-
-                        <Button
-                            component={NavLink}
-                            to="/about"
-                            variant="text"
-                            sx={{
-                                color: "text.secondary",
-                                fontSize: 14,
-                                fontWeight: 500,
-                                textTransform: "none",
-                            }}
-                        >
-                            About
-                        </Button>
+                {/* Primary nav */}
+                <Box sx={{ flex: 1, display: "flex", justifyContent: "center" }}>
+                    <Stack direction="row" spacing={0.5}>
+                        {[
+                            { to: "/", label: "Home" },
+                            { to: "/policies", label: "Policies" },
+                            { to: "/events", label: "Events" },
+                            { to: "/about", label: "About" },
+                        ].map((item) => (
+                            <Button
+                                key={item.to}
+                                component={NavLink}
+                                to={item.to}
+                                variant="text"
+                                size="small"
+                                sx={{
+                                    px: 1.25,
+                                    "&.active": {
+                                        backgroundColor: "action.selected",
+                                    },
+                                }}
+                            >
+                                {item.label}
+                            </Button>
+                        ))}
                     </Stack>
                 </Box>
 
-                {/* RIGHT: Auth buttons */}
-                <Box
-                    sx={{
-                        flex: 1,
-                        display: "flex",
-                        justifyContent: "flex-end",
-                        gap: 1.5,
-                    }}
-                >
-                    <Button
-                        component={NavLink}
-                        to="/change-password"
-                        variant="text"
-                        sx={{
-                            color: "text.secondary",
-                            fontSize: 14,
-                            fontWeight: 500,
-                            textTransform: "none",
-                        }}
-                    >
+                {/* Auth actions */}
+                <Box sx={{ flex: 1, display: "flex", justifyContent: "flex-end", gap: 1 }}>
+                    <Button component={NavLink} to="/change-password" variant="text" size="small">
                         Change Password
                     </Button>
 
@@ -129,27 +63,17 @@ const TopNav = () => {
                         component={NavLink}
                         to="/login"
                         variant="text"
+                        size="small"
                         sx={{
-                            color: "text.secondary",
-                            fontSize: 14,
-                            fontWeight: 500,
-                            textTransform: "none",
+                            "&.active": {
+                                backgroundColor: "action.selected",
+                            },
                         }}
                     >
                         Login
                     </Button>
 
-                    <Button
-                        component={NavLink}
-                        to="/register"
-                        variant="contained"
-                        color="primary"
-                        sx={{
-                            fontSize: 14,
-                            fontWeight: 500,
-                            textTransform: "none",
-                        }}
-                    >
+                    <Button component={NavLink} to="/register" variant="contained" size="small">
                         Register
                     </Button>
                 </Box>
