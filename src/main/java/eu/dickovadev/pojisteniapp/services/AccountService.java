@@ -8,5 +8,5 @@ public interface AccountService extends UserDetailsService {
 
     void create(RegisterDTO registerDTO);
 
-    void changePassword(Long userId, ChangePasswordDTO changePasswordDTO);
+    void changePassword(long userId, ChangePasswordDTO changePasswordDTO);
 }

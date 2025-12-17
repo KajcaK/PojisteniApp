@@ -76,7 +76,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Transactional
     @Override
-    public void changePassword(Long userId, ChangePasswordDTO changePasswordDTO) {
+    public void changePassword(long userId, ChangePasswordDTO changePasswordDTO) {
         log.info("Password change requested for user ID: {}", userId);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

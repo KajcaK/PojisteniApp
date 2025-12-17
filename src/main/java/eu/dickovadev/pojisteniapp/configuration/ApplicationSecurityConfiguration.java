@@ -3,6 +3,7 @@ package eu.dickovadev.pojisteniapp.configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -17,15 +18,12 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
 public class ApplicationSecurityConfiguration {
 
-    private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
     private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
     @Autowired
     public ApplicationSecurityConfiguration(
-            CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler,
             CustomAuthenticationFailureHandler customAuthenticationFailureHandler
     ) {
-        this.customAuthenticationSuccessHandler = customAuthenticationSuccessHandler;
         this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
     }
 
@@ -36,9 +34,12 @@ public class ApplicationSecurityConfiguration {
                 .cors(withDefaults())
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
                                 "/api/account/login",
                                 "/api/account/register",
+                                "/api/account/me",
+                                "/api/account/change-password",
                                 "/access-denied",
                                 "/error",
                                 "/404",
@@ -54,17 +55,8 @@ public class ApplicationSecurityConfiguration {
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
-                .formLogin(form -> form
-                        .loginPage("/api/account/login")
-                        .loginProcessingUrl("/api/account/login")
-                        .defaultSuccessUrl("/", true)
-                        .usernameParameter("email")
-                        .successHandler(customAuthenticationSuccessHandler)
-                        .failureHandler(customAuthenticationFailureHandler)
-                        .permitAll()
-                )
                 .exceptionHandling(ex -> ex.accessDeniedPage("/access-denied"))
-                .logout(logout -> logout.logoutUrl("/account/logout"));
+                .logout(logout -> logout.logoutUrl("/api/account/logout"));
 
         return http.build();
     }
