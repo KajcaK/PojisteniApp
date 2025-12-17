@@ -2,10 +2,12 @@ package eu.dickovadev.pojisteniapp.controllers;
 
 import eu.dickovadev.pojisteniapp.entities.UserEntity;
 import eu.dickovadev.pojisteniapp.models.dto.ChangePasswordDTO;
+import eu.dickovadev.pojisteniapp.models.dto.CurrentUserDTO;
 import eu.dickovadev.pojisteniapp.models.dto.LoginDTO;
 import eu.dickovadev.pojisteniapp.models.dto.RegisterDTO;
 import eu.dickovadev.pojisteniapp.models.exceptions.DuplicateEmailException;
 import eu.dickovadev.pojisteniapp.services.AccountService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,11 +17,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -64,7 +65,10 @@ public class AccountApiController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<?> login(
+            @Valid @RequestBody LoginDTO loginDTO,
+            HttpServletRequest request
+    ) {
         log.info("API login attempt for email={}", loginDTO.getEmail());
 
         try {
@@ -75,7 +79,13 @@ public class AccountApiController {
                     )
             );
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            SecurityContext context = SecurityContextHolder.createEmptyContext();
+            context.setAuthentication(authentication);
+            SecurityContextHolder.setContext(context);
+
+            request.getSession(true)
+                    .setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
+
 
             UserEntity user = (UserEntity) authentication.getPrincipal();
 
@@ -126,4 +136,17 @@ public class AccountApiController {
                 "message", "Heslo bylo úspěšně změněno."
         ));
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> me() {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null || !(auth.getPrincipal() instanceof UserEntity user)) {
+            return ResponseEntity.status(401).build();
+        }
+
+        var dto = new CurrentUserDTO(user.getUserId(), user.getEmail(), user.getRoles());
+        return ResponseEntity.ok(dto);
+    }
+
 }
